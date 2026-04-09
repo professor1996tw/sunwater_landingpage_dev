@@ -25,8 +25,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-
     <style>
         :root {
             --bg-deep: #050510;
@@ -45,10 +43,8 @@
             --text-primary: #ffffff;
             --text-secondary: rgba(255, 255, 255, 0.55);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-
         body {
             font-family: 'Noto Sans TC', 'Inter', -apple-system, sans-serif;
             background: var(--bg-deep);
@@ -69,8 +65,7 @@
         }
         .nav.scrolled { padding: 10px 40px; background: rgba(5, 5, 16, 0.95); }
         .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .nav-brand img { height: 32px; border-radius: 50%; }
-        .nav-brand span { font-size: 16px; font-weight: 700; color: var(--gold); letter-spacing: 2px; }
+        .nav-brand img { height: 36px; }
         .nav-links { display: flex; gap: 28px; align-items: center; }
         .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 400; transition: color 0.3s; }
         .nav-links a:hover { color: var(--gold-light); }
@@ -90,19 +85,18 @@
         }
         .hero-bg {
             position: absolute; inset: 0; overflow: hidden; z-index: 0;
+            background: url('./images/hero-banner.jpg') center center / cover no-repeat;
         }
+        /* Fallback gradient overlay (also darkens the banner image for readability) */
         .hero-bg::before {
-            content: ''; position: absolute; top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(ellipse at 30% 20%, rgba(200,150,62,0.06) 0%, transparent 50%),
-                        radial-gradient(ellipse at 70% 60%, rgba(56,189,248,0.04) 0%, transparent 50%);
-            animation: heroPulse 12s ease-in-out infinite alternate;
+            content: ''; position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(200,150,62,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(56,189,248,0.05) 0%, transparent 50%),
+                linear-gradient(180deg, rgba(5,5,16,0.6) 0%, rgba(5,5,16,0.85) 100%);
+            z-index: 1;
         }
-        @keyframes heroPulse {
-            0% { transform: scale(1) rotate(0deg); }
-            100% { transform: scale(1.1) rotate(3deg); }
-        }
-        .hero-content { position: relative; z-index: 1; max-width: 700px; }
+        .hero-content { position: relative; z-index: 2; max-width: 700px; }
         .hero-logo {
             max-width: 360px; width: 80%; margin: 0 auto 32px;
             animation: logoGlow 4s ease-in-out infinite alternate;
@@ -153,7 +147,7 @@
         .stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; letter-spacing: 1px; }
 
         /* ===== Section Common ===== */
-        .section { padding: 80px 20px; max-width: 1100px; margin: 0 auto; }
+        .section { padding: 80px 20px; max-width: 1200px; margin: 0 auto; }
         .section-label {
             text-align: center; font-size: 12px; letter-spacing: 4px;
             text-transform: uppercase; color: var(--gold); margin-bottom: 12px; font-weight: 500;
@@ -171,48 +165,92 @@
             background: linear-gradient(90deg, var(--gold), var(--cyan));
         }
 
-        /* ===== Price Table ===== */
-        .price-section { background: var(--navy); border-radius: 20px; padding: 40px; }
-        .price-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .price-header h3 { font-size: 18px; font-weight: 700; }
+        /* ===== Price Cards Grid ===== */
+        .price-header-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px; padding: 0 4px;
+        }
+        .price-header-bar h3 { font-size: 18px; font-weight: 700; }
         .price-sync { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
         .price-sync .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; }
         @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        .price-list { display: flex; flex-direction: column; gap: 2px; }
-        .price-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 20px; border-radius: 10px; cursor: pointer;
-            background: rgba(255,255,255,0.02); border: 1px solid transparent;
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .price-card {
+            background: var(--navy);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px 20px 16px;
+            cursor: pointer;
             transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
-        .price-item:hover { background: rgba(200,150,62,0.04); border-color: rgba(200,150,62,0.15); }
-        .price-item.expanded { background: rgba(200,150,62,0.06); border-color: rgba(200,150,62,0.2); border-radius: 10px 10px 0 0; }
-        .price-item-left { display: flex; align-items: center; gap: 12px; }
-        .price-item-idx { font-size: 12px; color: var(--text-secondary); width: 24px; }
-        .price-item-name { font-size: 15px; font-weight: 600; }
-        .price-item-right { display: flex; align-items: center; gap: 12px; }
-        .price-item-rate { font-size: 22px; font-weight: 800; color: var(--cyan); }
-        .price-item-arrow {
-            font-size: 12px; color: var(--text-secondary); transition: transform 0.3s;
+        .price-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--cyan));
+            opacity: 0; transition: opacity 0.3s;
         }
-        .price-item.expanded .price-item-arrow { transform: rotate(180deg); }
+        .price-card:hover { transform: translateY(-4px); border-color: rgba(200,150,62,0.25); }
+        .price-card:hover::before { opacity: 1; }
+        .price-card-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .price-card-name {
+            font-size: 15px; font-weight: 700; line-height: 1.3;
+        }
+        .price-card-rate {
+            font-size: 24px; font-weight: 800; color: var(--cyan);
+            white-space: nowrap;
+        }
+        .price-card-unit {
+            font-size: 11px; color: var(--text-secondary); margin-top: 2px;
+            text-align: right;
+        }
+        .price-card-chart {
+            width: 100%; height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+        }
 
-        .price-chart-container {
-            display: none; padding: 20px; margin-bottom: 4px;
-            background: rgba(0,0,0,0.3); border: 1px solid rgba(200,150,62,0.15);
-            border-top: none; border-radius: 0 0 10px 10px;
+        /* ===== Price Modal ===== */
+        .price-modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
+            align-items: center; justify-content: center; padding: 20px;
         }
-        .price-chart-container.show { display: block; }
-        .price-chart-container canvas { width: 100% !important; height: 180px !important; }
-        .chart-label { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 8px; }
-
-        .price-more {
-            display: block; text-align: center; margin-top: 24px;
-            color: var(--gold-light); text-decoration: none; font-size: 14px;
-            font-weight: 500; transition: color 0.3s; cursor: pointer;
+        .price-modal-overlay.show { display: flex; }
+        .price-modal {
+            background: var(--navy); border: 1px solid rgba(200,150,62,0.2);
+            border-radius: 20px; padding: 32px; max-width: 700px; width: 100%;
+            position: relative;
         }
-        .price-more:hover { color: var(--gold-bright); }
+        .price-modal-close {
+            position: absolute; top: 16px; right: 20px;
+            background: none; border: none; color: var(--text-secondary);
+            font-size: 24px; cursor: pointer; transition: color 0.3s;
+        }
+        .price-modal-close:hover { color: white; }
+        .price-modal-title {
+            font-size: 22px; font-weight: 800; margin-bottom: 4px;
+        }
+        .price-modal-rate {
+            font-size: 36px; font-weight: 800; color: var(--cyan); margin-bottom: 20px;
+        }
+        .price-modal-rate span { font-size: 14px; color: var(--text-secondary); font-weight: 400; margin-left: 8px; }
+        .price-modal-chart {
+            width: 100%; height: 320px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.3);
+        }
 
         /* ===== Services ===== */
         .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
@@ -302,7 +340,7 @@
         .mobile-menu .close-btn { position: absolute; top: 20px; right: 24px; font-size: 28px; color: white; background: none; border: none; cursor: pointer; }
 
         /* ===== Particles ===== */
-        #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        #particles { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         .particle {
             position: absolute; border-radius: 50%;
             animation: float var(--dur, 5s) ease-in-out var(--delay, 0s) infinite alternate;
@@ -310,28 +348,6 @@
         @keyframes float {
             0% { transform: translate(0, 0) scale(1); opacity: 0.6; }
             100% { transform: translate(20px, -30px) scale(0.5); opacity: 0.1; }
-        }
-
-        /* ===== Responsive ===== */
-        @media (max-width: 768px) {
-            .nav { padding: 12px 20px; }
-            .nav-links { display: none; }
-            .nav-mobile-toggle { display: block; }
-            .services-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .why-grid { grid-template-columns: repeat(2, 1fr); }
-            .stats-bar { gap: 24px; flex-wrap: wrap; }
-            .flow-arrow { display: none; }
-            .flow-step { min-width: 140px; }
-            .price-section { padding: 20px 14px; border-radius: 14px; }
-            .section { padding: 60px 16px; }
-            .hero-logo { max-width: 260px; }
-            .price-item { padding: 14px 14px; }
-            .price-item-rate { font-size: 18px; }
-        }
-        @media (max-width: 480px) {
-            .services-grid { grid-template-columns: 1fr; }
-            .stats-bar { gap: 16px; }
-            .stat-number { font-size: 24px; }
         }
 
         /* ===== Coming Soon Modal ===== */
@@ -353,17 +369,43 @@
             font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s;
         }
         .modal-btn:hover { box-shadow: 0 4px 20px var(--gold-glow); }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            .price-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .nav { padding: 12px 20px; }
+            .nav-links { display: none; }
+            .nav-mobile-toggle { display: block; }
+            .services-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .why-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-bar { gap: 24px; flex-wrap: wrap; }
+            .flow-arrow { display: none; }
+            .flow-step { min-width: 140px; }
+            .section { padding: 60px 16px; }
+            .hero-logo { max-width: 260px; }
+            .price-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+            .price-card { padding: 18px 14px 12px; }
+            .price-card-rate { font-size: 20px; }
+            .price-modal { padding: 24px 18px; }
+            .price-modal-chart { height: 240px; }
+        }
+        @media (max-width: 480px) {
+            .services-grid { grid-template-columns: 1fr; }
+            .stats-bar { gap: 16px; }
+            .stat-number { font-size: 24px; }
+            .price-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-<div id="particles"></div>
-
 <!-- Navigation -->
 <nav class="nav" id="nav">
     <a href="#" class="nav-brand">
-        <img src="https://img3.pchome.net/di_downinfo/2025/0715/61db593796854c45a0d381e8c87403f8.png" alt="日央水原">
-        <span>SUNWATER</span>
+        <img src="./images/nav-logo.png" alt="日央水原 SUNWATER"
+             onerror="this.src='https://img3.pchome.net/di_downinfo/2025/0715/61db593796854c45a0d381e8c87403f8.png';this.style.height='32px';this.style.borderRadius='50%';">
     </a>
     <div class="nav-links">
         <a href="#prices">即時報價</a>
@@ -385,11 +427,11 @@
     <a href="#" class="nav-cta" style="margin-top:16px;" onclick="closeMobile();showComingSoon(event)">進入交易網 →</a>
 </div>
 
-<!-- Hero -->
+<!-- Hero with Banner Background -->
 <section class="hero" id="hero">
     <div class="hero-bg"></div>
+    <div id="particles"></div>
     <div class="hero-content">
-        <!-- 橫式 Logo：請將 logo.png 放到 images/ 資料夾 -->
         <img class="hero-logo" src="./images/logo.png" alt="日央水原 SUNWATER"
              onerror="this.src='https://img3.pchome.net/di_downinfo/2025/0715/61db593796854c45a0d381e8c87403f8.png';this.style.maxWidth='100px';this.style.borderRadius='50%';">
         <p class="hero-tagline">Professional Game Trading Platform</p>
@@ -420,22 +462,29 @@
     </div>
 </div>
 
-<!-- Price Section -->
+<!-- Price Section — Card Grid -->
 <section class="section fade-up" id="prices">
     <div class="section-label">Real-Time Pricing</div>
     <div class="section-title">天堂經典版 即時幣價</div>
     <div class="divider" style="margin-bottom: 40px;"></div>
-    <div class="price-section">
-        <div class="price-header">
-            <h3>伺服器匯率 (TWD)</h3>
-            <div class="price-sync"><span class="dot"></span> <span id="syncTime">同步中...</span></div>
-        </div>
-        <div class="price-list" id="priceList">
-            <!-- Prices loaded via JS -->
-        </div>
-        <div class="price-more" id="priceToggle" onclick="toggleAllPrices()">展開全部伺服器 ▾</div>
+    <div class="price-header-bar">
+        <h3>伺服器匯率 (TWD)</h3>
+        <div class="price-sync"><span class="dot"></span> <span id="syncTime">同步中...</span></div>
+    </div>
+    <div class="price-grid" id="priceGrid">
+        <!-- Cards generated by JS -->
     </div>
 </section>
+
+<!-- Price Detail Modal -->
+<div class="price-modal-overlay" id="priceModal">
+    <div class="price-modal">
+        <button class="price-modal-close" onclick="closePriceModal()">&times;</button>
+        <div class="price-modal-title" id="modalServerName">—</div>
+        <div class="price-modal-rate" id="modalServerRate">—<span>TWD</span></div>
+        <div class="price-modal-chart" id="modalChartContainer"></div>
+    </div>
+</div>
 
 <!-- Services -->
 <section class="section fade-up" id="services">
@@ -600,15 +649,16 @@
     </div>
 </div>
 
+<!-- Lightweight Charts (TradingView) -->
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+
 <script>
 // ===== Navigation =====
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 50));
-
 document.getElementById('mobileToggle').addEventListener('click', () => document.getElementById('mobileMenu').classList.add('open'));
 document.getElementById('mobileClose').addEventListener('click', closeMobile);
 function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
-
 function showComingSoon(e) { e.preventDefault(); document.getElementById('comingSoonModal').classList.add('show'); }
 document.getElementById('comingSoonModal').addEventListener('click', function(e) { if(e.target===this) this.classList.remove('show'); });
 
@@ -616,7 +666,7 @@ document.getElementById('comingSoonModal').addEventListener('click', function(e)
 const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 });
 document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-// ===== Particles =====
+// ===== Particles (inside hero only) =====
 const particlesEl = document.getElementById('particles');
 const isMobile = window.innerWidth <= 768;
 for(let i = 0; i < (isMobile ? 12 : 28); i++){
@@ -635,101 +685,204 @@ for(let i = 0; i < (isMobile ? 12 : 28); i++){
     particlesEl.appendChild(p);
 }
 
-// ===== K-Line OHLC Data (from price-log.csv) =====
-const ohlcData = {"太陽神阿波羅":[{"date":"04/06","o":295,"h":300,"l":285,"c":300},{"date":"04/07","o":300,"h":310,"l":295,"c":305},{"date":"04/08","o":310,"h":310,"l":300,"c":300}],"愛神丘比特":[{"date":"04/06","o":310,"h":320,"l":290,"c":290},{"date":"04/07","o":295,"h":325,"l":280,"c":325},{"date":"04/08","o":325,"h":330,"l":310,"c":310}],"勝利女神雅典娜":[{"date":"04/06","o":245,"h":260,"l":230,"c":260},{"date":"04/07","o":260,"h":260,"l":255,"c":255},{"date":"04/08","o":260,"h":260,"l":250,"c":250}],"美神維納斯":[{"date":"04/06","o":320,"h":335,"l":300,"c":305},{"date":"04/07","o":305,"h":320,"l":305,"c":315},{"date":"04/08","o":315,"h":325,"l":305,"c":305}],"天神宙斯":[{"date":"04/06","o":250,"h":255,"l":235,"c":250},{"date":"04/07","o":250,"h":265,"l":250,"c":260},{"date":"04/08","o":260,"h":260,"l":250,"c":250}],"天后海拉":[{"date":"04/06","o":235,"h":245,"l":230,"c":240},{"date":"04/07","o":240,"h":255,"l":240,"c":250},{"date":"04/08","o":250,"h":255,"l":245,"c":245}],"戰神馬爾斯":[{"date":"04/06","o":320,"h":340,"l":310,"c":330},{"date":"04/07","o":330,"h":330,"l":320,"c":325},{"date":"04/08","o":325,"h":335,"l":325,"c":325}],"月亮女神阿緹蜜斯":[{"date":"04/06","o":240,"h":260,"l":240,"c":260},{"date":"04/07","o":260,"h":260,"l":250,"c":260},{"date":"04/08","o":250,"h":255,"l":250,"c":250}],"海神波塞頓":[{"date":"04/06","o":285,"h":295,"l":280,"c":280},{"date":"04/07","o":280,"h":300,"l":280,"c":295},{"date":"04/08","o":300,"h":300,"l":285,"c":285}],"水蛇許德拉":[{"date":"04/06","o":400,"h":420,"l":370,"c":395},{"date":"04/07","o":395,"h":405,"l":365,"c":380},{"date":"04/08","o":390,"h":405,"l":380,"c":385}],"冥王黑帝斯":[{"date":"04/06","o":325,"h":345,"l":315,"c":340},{"date":"04/07","o":345,"h":345,"l":300,"c":325},{"date":"04/08","o":315,"h":325,"l":310,"c":310}],"火神赫發斯特斯":[{"date":"04/06","o":240,"h":250,"l":240,"c":250},{"date":"04/07","o":250,"h":250,"l":240,"c":245},{"date":"04/08","o":245,"h":245,"l":245,"c":245}],"收獲女神蒂蜜特":[{"date":"04/06","o":305,"h":320,"l":300,"c":300},{"date":"04/07","o":300,"h":320,"l":295,"c":315},{"date":"04/08","o":315,"h":320,"l":295,"c":305}],"蛇髮女墨杜沙":[{"date":"04/06","o":330,"h":345,"l":310,"c":335},{"date":"04/07","o":335,"h":350,"l":310,"c":340},{"date":"04/08","o":345,"h":345,"l":280,"c":280}],"半人馬涅索斯":[{"date":"04/06","o":275,"h":285,"l":270,"c":285},{"date":"04/07","o":285,"h":300,"l":280,"c":290},{"date":"04/08","o":290,"h":295,"l":285,"c":285}],"牛人彌諾陶洛斯":[{"date":"04/06","o":255,"h":270,"l":255,"c":270},{"date":"04/07","o":270,"h":295,"l":270,"c":290},{"date":"04/08","o":285,"h":295,"l":280,"c":280}],"泰坦女神瑞亞":[{"date":"04/06","o":380,"h":415,"l":375,"c":405},{"date":"04/07","o":405,"h":410,"l":390,"c":405},{"date":"04/08","o":410,"h":410,"l":390,"c":390}]};
-
-// ===== Price Data =====
+// ===== Google Sheets Config =====
 const SHEET_ID = '1ujUTvJcHLN7MTMLJrbuLX_m789syksY0cSPmKw175yY';
-const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
-let allPricesExpanded = false;
-const charts = {};
+const PRICE_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+// OHLC sheet — expects columns: server, date, open, high, low, close
+const OHLC_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1`;
 
-function drawKLine(canvasId, serverName) {
-    const data = ohlcData[serverName];
-    if (!data || data.length === 0) return;
-    if (charts[canvasId]) { charts[canvasId].destroy(); }
+// ===== Fallback OHLC Data =====
+const fallbackOHLC = {"太陽神阿波羅":[{"time":"2026-04-06","open":295,"high":300,"low":285,"close":300},{"time":"2026-04-07","open":300,"high":310,"low":295,"close":305},{"time":"2026-04-08","open":310,"high":310,"low":300,"close":300}],"愛神丘比特":[{"time":"2026-04-06","open":310,"high":320,"low":290,"close":290},{"time":"2026-04-07","open":295,"high":325,"low":280,"close":325},{"time":"2026-04-08","open":325,"high":330,"low":310,"close":310}],"勝利女神雅典娜":[{"time":"2026-04-06","open":245,"high":260,"low":230,"close":260},{"time":"2026-04-07","open":260,"high":260,"low":255,"close":255},{"time":"2026-04-08","open":260,"high":260,"low":250,"close":250}],"美神維納斯":[{"time":"2026-04-06","open":320,"high":335,"low":300,"close":305},{"time":"2026-04-07","open":305,"high":320,"low":305,"close":315},{"time":"2026-04-08","open":315,"high":325,"low":305,"close":305}],"天神宙斯":[{"time":"2026-04-06","open":250,"high":255,"low":235,"close":250},{"time":"2026-04-07","open":250,"high":265,"low":250,"close":260},{"time":"2026-04-08","open":260,"high":260,"low":250,"close":250}],"天后海拉":[{"time":"2026-04-06","open":235,"high":245,"low":230,"close":240},{"time":"2026-04-07","open":240,"high":255,"low":240,"close":250},{"time":"2026-04-08","open":250,"high":255,"low":245,"close":245}],"戰神馬爾斯":[{"time":"2026-04-06","open":320,"high":340,"low":310,"close":330},{"time":"2026-04-07","open":330,"high":330,"low":320,"close":325},{"time":"2026-04-08","open":325,"high":335,"low":325,"close":325}],"月亮女神阿緹蜜斯":[{"time":"2026-04-06","open":240,"high":260,"low":240,"close":260},{"time":"2026-04-07","open":260,"high":260,"low":250,"close":260},{"time":"2026-04-08","open":250,"high":255,"low":250,"close":250}],"海神波塞頓":[{"time":"2026-04-06","open":285,"high":295,"low":280,"close":280},{"time":"2026-04-07","open":280,"high":300,"low":280,"close":295},{"time":"2026-04-08","open":300,"high":300,"low":285,"close":285}],"水蛇許德拉":[{"time":"2026-04-06","open":400,"high":420,"low":370,"close":395},{"time":"2026-04-07","open":395,"high":405,"low":365,"close":380},{"time":"2026-04-08","open":390,"high":405,"low":380,"close":385}],"冥王黑帝斯":[{"time":"2026-04-06","open":325,"high":345,"low":315,"close":340},{"time":"2026-04-07","open":345,"high":345,"low":300,"close":325},{"time":"2026-04-08","open":315,"high":325,"low":310,"close":310}],"火神赫發斯特斯":[{"time":"2026-04-06","open":240,"high":250,"low":240,"close":250},{"time":"2026-04-07","open":250,"high":250,"low":240,"close":245},{"time":"2026-04-08","open":245,"high":245,"low":245,"close":245}],"收獲女神蒂蜜特":[{"time":"2026-04-06","open":305,"high":320,"low":300,"close":300},{"time":"2026-04-07","open":300,"high":320,"low":295,"close":315},{"time":"2026-04-08","open":315,"high":320,"low":295,"close":305}],"蛇髮女墨杜沙":[{"time":"2026-04-06","open":330,"high":345,"low":310,"close":335},{"time":"2026-04-07","open":335,"high":350,"low":310,"close":340},{"time":"2026-04-08","open":345,"high":345,"low":280,"close":280}],"半人馬涅索斯":[{"time":"2026-04-06","open":275,"high":285,"low":270,"close":285},{"time":"2026-04-07","open":285,"high":300,"low":280,"close":290},{"time":"2026-04-08","open":290,"high":295,"low":285,"close":285}],"牛人彌諾陶洛斯":[{"time":"2026-04-06","open":255,"high":270,"low":255,"close":270},{"time":"2026-04-07","open":270,"high":295,"low":270,"close":290},{"time":"2026-04-08","open":285,"high":295,"low":280,"close":280}],"泰坦女神瑞亞":[{"time":"2026-04-06","open":380,"high":415,"low":375,"close":405},{"time":"2026-04-07","open":405,"high":410,"low":390,"close":405},{"time":"2026-04-08","open":410,"high":410,"low":390,"close":390}]};
 
-    const canvas = document.getElementById(canvasId);
-    const ctx = canvas.getContext('2d');
+// ===== State =====
+let ohlcDataMap = { ...fallbackOHLC };
+let priceDataList = [];
+const miniCharts = {};  // serverName -> chart instance
+let modalChart = null;
 
-    // Custom candlestick via bar chart
-    const dates = data.map(d => d.date);
-    const allVals = data.flatMap(d => [d.h, d.l]);
-    const minVal = Math.min(...allVals) - 10;
-    const maxVal = Math.max(...allVals) + 10;
-
-    charts[canvasId] = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dates,
-            datasets: [
-                {
-                    label: '高低',
-                    data: data.map(d => [d.l, d.h]),
-                    backgroundColor: data.map(d => d.c >= d.o ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'),
-                    borderColor: data.map(d => d.c >= d.o ? '#22c55e' : '#ef4444'),
-                    borderWidth: 1,
-                    barPercentage: 0.15,
-                },
-                {
-                    label: '開收',
-                    data: data.map(d => [Math.min(d.o, d.c), Math.max(d.o, d.c)]),
-                    backgroundColor: data.map(d => d.c >= d.o ? '#22c55e' : '#ef4444'),
-                    borderColor: data.map(d => d.c >= d.o ? '#22c55e' : '#ef4444'),
-                    borderWidth: 1,
-                    barPercentage: 0.6,
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: {
-                callbacks: {
-                    label: function(ctx) {
-                        const d = data[ctx.dataIndex];
-                        return `開:${d.o} 高:${d.h} 低:${d.l} 收:${d.c}`;
+// ===== Fetch OHLC from Sheets (gid=1) =====
+async function fetchOHLC() {
+    try {
+        const resp = await fetch(OHLC_CSV_URL);
+        const text = await resp.text();
+        const rows = text.split('\n').slice(1);
+        const map = {};
+        rows.forEach(row => {
+            const cols = row.split(',');
+            if (cols.length >= 6) {
+                const server = cols[0].trim().replace(/^"|"$/g, '');
+                const dateRaw = cols[1].trim().replace(/^"|"$/g, '');
+                const o = parseFloat(cols[2]);
+                const h = parseFloat(cols[3]);
+                const l = parseFloat(cols[4]);
+                const c = parseFloat(cols[5]);
+                if (!server || isNaN(o)) return;
+                // Convert date to YYYY-MM-DD
+                let time = dateRaw;
+                if (dateRaw.includes('/')) {
+                    const parts = dateRaw.split('/');
+                    if (parts.length === 3) {
+                        time = `${parts[0].padStart(4,'0')}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
+                    } else if (parts.length === 2) {
+                        const y = new Date().getFullYear();
+                        time = `${y}-${parts[0].padStart(2,'0')}-${parts[1].padStart(2,'0')}`;
                     }
                 }
-            }},
-            scales: {
-                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 } } },
-                y: { min: minVal, max: maxVal, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 } } }
+                if (!map[server]) map[server] = [];
+                map[server].push({ time, open: o, high: h, low: l, close: c });
             }
+        });
+        // Sort each server's data by time
+        Object.keys(map).forEach(k => {
+            map[k].sort((a, b) => a.time.localeCompare(b.time));
+        });
+        if (Object.keys(map).length > 0) {
+            ohlcDataMap = map;
         }
-    });
-}
-
-function toggleChart(idx, serverName) {
-    const container = document.getElementById('chart-' + idx);
-    const item = document.getElementById('item-' + idx);
-    if (container.classList.contains('show')) {
-        container.classList.remove('show');
-        item.classList.remove('expanded');
-    } else {
-        container.classList.add('show');
-        item.classList.add('expanded');
-        const canvasId = 'canvas-' + idx;
-        if (!charts[canvasId]) {
-            setTimeout(() => drawKLine(canvasId, serverName), 100);
-        }
+    } catch(e) {
+        console.warn('OHLC fetch fallback:', e);
     }
 }
 
-function toggleAllPrices() {
-    allPricesExpanded = !allPricesExpanded;
-    document.querySelectorAll('.price-item-wrapper').forEach((el, i) => {
-        el.style.display = (allPricesExpanded || i < 6) ? 'block' : 'none';
+// ===== Create Mini Chart =====
+function createMiniChart(container, serverName) {
+    const data = ohlcDataMap[serverName];
+    if (!data || data.length === 0) {
+        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.2);font-size:12px;">暫無數據</div>';
+        return null;
+    }
+    container.innerHTML = '';
+    const chart = LightweightCharts.createChart(container, {
+        width: container.clientWidth,
+        height: container.clientHeight,
+        layout: {
+            background: { type: 'solid', color: 'transparent' },
+            textColor: 'rgba(255,255,255,0.3)',
+            fontSize: 10,
+        },
+        grid: {
+            vertLines: { color: 'rgba(255,255,255,0.04)' },
+            horzLines: { color: 'rgba(255,255,255,0.04)' },
+        },
+        rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.1, bottom: 0.1 } },
+        timeScale: { borderVisible: false, visible: false },
+        crosshair: { mode: 0 },
+        handleScroll: false,
+        handleScale: false,
     });
-    document.getElementById('priceToggle').textContent = allPricesExpanded ? '收合伺服器列表 ▴' : '展開全部伺服器 ▾';
+    const series = chart.addCandlestickSeries({
+        upColor: '#22c55e',
+        downColor: '#ef4444',
+        borderUpColor: '#22c55e',
+        borderDownColor: '#ef4444',
+        wickUpColor: '#22c55e',
+        wickDownColor: '#ef4444',
+    });
+    series.setData(data);
+    chart.timeScale().fitContent();
+    return chart;
 }
 
+// ===== Create Modal Chart =====
+function createModalChart(serverName) {
+    const container = document.getElementById('modalChartContainer');
+    const data = ohlcDataMap[serverName];
+    if (modalChart) {
+        modalChart.remove();
+        modalChart = null;
+    }
+    if (!data || data.length === 0) {
+        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);">暫無數據</div>';
+        return;
+    }
+    container.innerHTML = '';
+    modalChart = LightweightCharts.createChart(container, {
+        width: container.clientWidth,
+        height: container.clientHeight,
+        layout: {
+            background: { type: 'solid', color: 'rgba(0,0,0,0.2)' },
+            textColor: 'rgba(255,255,255,0.5)',
+            fontSize: 12,
+        },
+        grid: {
+            vertLines: { color: 'rgba(255,255,255,0.05)' },
+            horzLines: { color: 'rgba(255,255,255,0.05)' },
+        },
+        rightPriceScale: { borderColor: 'rgba(255,255,255,0.1)' },
+        timeScale: { borderColor: 'rgba(255,255,255,0.1)' },
+        crosshair: {
+            vertLine: { color: 'rgba(200,150,62,0.4)', labelBackgroundColor: '#C8963E' },
+            horzLine: { color: 'rgba(200,150,62,0.4)', labelBackgroundColor: '#C8963E' },
+        },
+    });
+    const series = modalChart.addCandlestickSeries({
+        upColor: '#22c55e',
+        downColor: '#ef4444',
+        borderUpColor: '#22c55e',
+        borderDownColor: '#ef4444',
+        wickUpColor: '#22c55e',
+        wickDownColor: '#ef4444',
+    });
+    series.setData(data);
+    modalChart.timeScale().fitContent();
+}
+
+// ===== Open / Close Modal =====
+function openPriceModal(serverName, rate) {
+    document.getElementById('modalServerName').textContent = serverName;
+    document.getElementById('modalServerRate').innerHTML = rate + '<span>TWD</span>';
+    document.getElementById('priceModal').classList.add('show');
+    setTimeout(() => createModalChart(serverName), 50);
+}
+function closePriceModal() {
+    document.getElementById('priceModal').classList.remove('show');
+    if (modalChart) { modalChart.remove(); modalChart = null; }
+}
+document.getElementById('priceModal').addEventListener('click', function(e) {
+    if (e.target === this) closePriceModal();
+});
+
+// ===== Render Price Cards =====
+function renderPriceCards(data) {
+    const grid = document.getElementById('priceGrid');
+    grid.innerHTML = '';
+    data.forEach((item, i) => {
+        const card = document.createElement('div');
+        card.className = 'price-card';
+        card.onclick = () => openPriceModal(item.name, item.value);
+        card.innerHTML = `
+            <div class="price-card-header">
+                <div class="price-card-name">${item.name}</div>
+                <div>
+                    <div class="price-card-rate">${item.value}</div>
+                    <div class="price-card-unit">TWD</div>
+                </div>
+            </div>
+            <div class="price-card-chart" id="minichart-${i}"></div>
+        `;
+        grid.appendChild(card);
+    });
+    // Render mini charts after DOM paint
+    requestAnimationFrame(() => {
+        data.forEach((item, i) => {
+            const container = document.getElementById('minichart-' + i);
+            if (container) {
+                if (miniCharts[item.name]) {
+                    miniCharts[item.name].remove();
+                }
+                miniCharts[item.name] = createMiniChart(container, item.name);
+            }
+        });
+    });
+}
+
+// ===== Fetch Prices =====
 async function fetchPrices() {
     try {
-        const response = await fetch(SHEET_CSV_URL);
+        const response = await fetch(PRICE_CSV_URL);
         const csvText = await response.text();
-        const rows = csvText.split('\n').slice(1); // skip header
-        const parsedData = rows.map(row => {
+        const rows = csvText.split('\n').slice(1);
+        priceDataList = rows.map(row => {
             const cols = row.split(',');
             if (cols.length >= 2) {
                 return {
@@ -740,44 +893,43 @@ async function fetchPrices() {
             return null;
         }).filter(item => item && item.name);
 
-        const list = document.getElementById('priceList');
-        list.innerHTML = '';
-
-        parsedData.forEach((item, i) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'price-item-wrapper';
-            wrapper.style.display = i < 6 ? 'block' : (allPricesExpanded ? 'block' : 'none');
-
-            wrapper.innerHTML = `
-                <div class="price-item" id="item-${i}" onclick="toggleChart(${i}, '${item.name}')">
-                    <div class="price-item-left">
-                        <span class="price-item-idx">${i+1}</span>
-                        <span class="price-item-name">${item.name}</span>
-                    </div>
-                    <div class="price-item-right">
-                        <span class="price-item-rate">${item.value}</span>
-                        <span class="price-item-arrow">▾</span>
-                    </div>
-                </div>
-                <div class="price-chart-container" id="chart-${i}">
-                    <canvas id="canvas-${i}" height="180"></canvas>
-                    <div class="chart-label">近日 TWD 匯率走勢（K 線圖）</div>
-                </div>
-            `;
-            list.appendChild(wrapper);
-        });
+        renderPriceCards(priceDataList);
 
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
-        document.getElementById('syncTime').textContent = `${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} 同步`;
-        document.getElementById('priceToggle').textContent = allPricesExpanded ? '收合伺服器列表 ▴' : `展開全部 ${parsedData.length} 個伺服器 ▾`;
+        document.getElementById('syncTime').textContent =
+            `${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} 同步`;
     } catch(err) {
         console.error('Price fetch error:', err);
-        document.getElementById('priceList').innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:40px;">報價載入中，請稍後重新整理...</p>';
+        document.getElementById('priceGrid').innerHTML =
+            '<p style="color:var(--text-secondary);text-align:center;padding:40px;grid-column:1/-1;">報價載入中，請稍後重新整理...</p>';
     }
 }
-fetchPrices();
-setInterval(fetchPrices, 30000);
+
+// ===== Resize handler for mini charts =====
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        Object.values(miniCharts).forEach(chart => {
+            if (chart && chart.resize) {
+                const container = chart.chartElement().parentElement;
+                if (container) chart.resize(container.clientWidth, container.clientHeight);
+            }
+        });
+    }, 200);
+});
+
+// ===== Init =====
+(async function init() {
+    await fetchOHLC();
+    await fetchPrices();
+    // Auto refresh every 15 min (prices + OHLC)
+    setInterval(async () => {
+        await fetchOHLC();
+        await fetchPrices();
+    }, 15 * 60 * 1000);
+})();
 </script>
 
 <script type="application/ld+json">
