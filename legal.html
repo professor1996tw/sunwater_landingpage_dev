@@ -437,4 +437,39 @@ function switchPage(page) {
     pages.forEach(function(p) { p.classList.remove('active'); });
     // Deactivate all tabs
     var tabs = document.querySelectorAll('.tab-btn');
-    tabs.forEach(function(t) { t.classList.
+    tabs.forEach(function(t) { t.classList.remove('active'); });
+    // Show target page
+    var target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+    // Activate corresponding tab
+    var tabMap = { terms: 0, risk: 1, privacy: 2, aml: 3 };
+    if (tabMap[page] !== undefined && tabs[tabMap[page]]) {
+        tabs[tabMap[page]].classList.add('active');
+    }
+    // Update URL without reload
+    var url = new URL(window.location);
+    url.searchParams.set('page', page);
+    history.replaceState(null, '', url);
+    // Update page title
+    var titleMap = {
+        terms: '服務條款',
+        risk: '風險揭露',
+        privacy: '隱私權政策',
+        aml: '反洗錢聲明'
+    };
+    document.title = (titleMap[page] || '法律聲明') + ' — 日央水原 SUNWATER';
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== Init: read URL param =====
+(function() {
+    var params = new URLSearchParams(window.location.search);
+    var page = params.get('page');
+    if (page && ['terms', 'risk', 'privacy', 'aml'].indexOf(page) !== -1) {
+        switchPage(page);
+    }
+})();
+</script>
+</body>
+</html>
