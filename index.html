@@ -69,6 +69,14 @@
         .nav-links { display: flex; gap: 28px; align-items: center; }
         .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 400; transition: color 0.3s; }
         .nav-links a:hover { color: var(--gold-light); }
+        .nav-kyc {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff; padding: 8px 20px; border-radius: 8px; font-weight: 600;
+            font-size: 14px; text-decoration: none; transition: all 0.3s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .nav-kyc:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(34,197,94,0.4); }
+        .nav-kyc svg { flex-shrink: 0; }
         .nav-cta {
             background: linear-gradient(135deg, var(--gold), var(--gold-light));
             color: #0a0a0a; padding: 8px 22px; border-radius: 8px; font-weight: 600;
@@ -112,6 +120,14 @@
         }
         .hero-desc { font-size: 17px; color: var(--text-secondary); margin-bottom: 40px; line-height: 1.8; }
         .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .btn-kyc {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff; padding: 14px 36px; border-radius: 12px;
+            font-size: 16px; font-weight: 700; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.3s; border: none; cursor: pointer;
+        }
+        .btn-kyc:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(34,197,94,0.4); }
         .btn-primary {
             background: linear-gradient(135deg, var(--gold), var(--gold-light));
             color: #0a0a0a; padding: 14px 36px; border-radius: 12px;
@@ -380,6 +396,10 @@
         <a href="#services">服務項目</a>
         <a href="#why">關於我們</a>
         <a href="#social">社群</a>
+        <a href="./kyc.html" class="nav-kyc">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
+            實名認證
+        </a>
         <a href="#" class="nav-cta" onclick="showComingSoon(event)">進入交易網 →</a>
     </div>
     <button class="nav-mobile-toggle" id="mobileToggle" aria-label="選單">☰</button>
@@ -392,7 +412,11 @@
     <a href="#services" onclick="closeMobile()">服務項目</a>
     <a href="#why" onclick="closeMobile()">關於我們</a>
     <a href="#social" onclick="closeMobile()">社群</a>
-    <a href="#" class="nav-cta" style="margin-top:16px;" onclick="closeMobile();showComingSoon(event)">進入交易網 →</a>
+    <a href="./kyc.html" class="nav-kyc" style="margin-top:16px;" onclick="closeMobile()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
+        實名認證
+    </a>
+    <a href="#" class="nav-cta" onclick="closeMobile();showComingSoon(event)">進入交易網 →</a>
 </div>
 
 <!-- Hero -->
@@ -405,6 +429,10 @@
         <p class="hero-tagline">Professional Game Trading Platform</p>
         <p class="hero-desc">台灣專業遊戲虛寶交易平台<br>安全交易・即時到帳・透明報價</p>
         <div class="hero-buttons">
+            <a href="./kyc.html" class="btn-kyc">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
+                實名認證
+            </a>
             <a href="#" class="btn-primary" onclick="showComingSoon(event)">進入交易網 →</a>
             <a href="https://line.me/R/ti/p/@321enghh" target="_blank" rel="noopener" class="btn-secondary">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#06c755"><path d="M24 10.304c0-5.232-5.383-9.488-12-9.488S0 5.072 0 10.304c0 4.689 4.272 8.58 10.038 9.354.391.084.923.258 1.057.592.121.303.079.778.039 1.085l-.171 1.027c-.052.308-.252 1.206 1.089.658 1.341-.548 7.232-4.258 9.873-7.291C23.273 14.195 24 12.35 24 10.304z"/></svg>
@@ -635,18 +663,46 @@ initScrollAnimations();
 // ===== Config =====
 var SHEET_ID = '1ujUTvJcHLN7MTMLJrbuLX_m789syksY0cSPmKw175yY';
 var PRICE_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=0';
-var OHLC_CSV_URL  = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=1';
+var HISTORY_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=2';
+var DISPLAY_DAYS = 7; // 只顯示最近 7 天
 
-// ===== Fallback OHLC =====
-var fallbackOHLC = {"太陽神阿波羅":[{"time":"2026-04-06","open":295,"high":300,"low":285,"close":300},{"time":"2026-04-07","open":300,"high":310,"low":295,"close":305},{"time":"2026-04-08","open":310,"high":310,"low":300,"close":300}],"愛神丘比特":[{"time":"2026-04-06","open":310,"high":320,"low":290,"close":290},{"time":"2026-04-07","open":295,"high":325,"low":280,"close":325},{"time":"2026-04-08","open":325,"high":330,"low":310,"close":310}],"勝利女神雅典娜":[{"time":"2026-04-06","open":245,"high":260,"low":230,"close":260},{"time":"2026-04-07","open":260,"high":260,"low":255,"close":255},{"time":"2026-04-08","open":260,"high":260,"low":250,"close":250}],"美神維納斯":[{"time":"2026-04-06","open":320,"high":335,"low":300,"close":305},{"time":"2026-04-07","open":305,"high":320,"low":305,"close":315},{"time":"2026-04-08","open":315,"high":325,"low":305,"close":305}],"天神宙斯":[{"time":"2026-04-06","open":250,"high":255,"low":235,"close":250},{"time":"2026-04-07","open":250,"high":265,"low":250,"close":260},{"time":"2026-04-08","open":260,"high":260,"low":250,"close":250}],"天后海拉":[{"time":"2026-04-06","open":235,"high":245,"low":230,"close":240},{"time":"2026-04-07","open":240,"high":255,"low":240,"close":250},{"time":"2026-04-08","open":250,"high":255,"low":245,"close":245}],"戰神馬爾斯":[{"time":"2026-04-06","open":320,"high":340,"low":310,"close":330},{"time":"2026-04-07","open":330,"high":330,"low":320,"close":325},{"time":"2026-04-08","open":325,"high":335,"low":325,"close":325}],"月亮女神阿緹蜜斯":[{"time":"2026-04-06","open":240,"high":260,"low":240,"close":260},{"time":"2026-04-07","open":260,"high":260,"low":250,"close":260},{"time":"2026-04-08","open":250,"high":255,"low":250,"close":250}],"海神波塞頓":[{"time":"2026-04-06","open":285,"high":295,"low":280,"close":280},{"time":"2026-04-07","open":280,"high":300,"low":280,"close":295},{"time":"2026-04-08","open":300,"high":300,"low":285,"close":285}],"水蛇許德拉":[{"time":"2026-04-06","open":400,"high":420,"low":370,"close":395},{"time":"2026-04-07","open":395,"high":405,"low":365,"close":380},{"time":"2026-04-08","open":390,"high":405,"low":380,"close":385}],"冥王黑帝斯":[{"time":"2026-04-06","open":325,"high":345,"low":315,"close":340},{"time":"2026-04-07","open":345,"high":345,"low":300,"close":325},{"time":"2026-04-08","open":315,"high":325,"low":310,"close":310}],"火神赫發斯特斯":[{"time":"2026-04-06","open":240,"high":250,"low":240,"close":250},{"time":"2026-04-07","open":250,"high":250,"low":240,"close":245},{"time":"2026-04-08","open":245,"high":245,"low":245,"close":245}],"收獲女神蒂蜜特":[{"time":"2026-04-06","open":305,"high":320,"low":300,"close":300},{"time":"2026-04-07","open":300,"high":320,"low":295,"close":315},{"time":"2026-04-08","open":315,"high":320,"low":295,"close":305}],"蛇髮女墨杜沙":[{"time":"2026-04-06","open":330,"high":345,"low":310,"close":335},{"time":"2026-04-07","open":335,"high":350,"low":310,"close":340},{"time":"2026-04-08","open":345,"high":345,"low":280,"close":280}],"半人馬涅索斯":[{"time":"2026-04-06","open":275,"high":285,"low":270,"close":285},{"time":"2026-04-07","open":285,"high":300,"low":280,"close":290},{"time":"2026-04-08","open":290,"high":295,"low":285,"close":285}],"牛人彌諾陶洛斯":[{"time":"2026-04-06","open":255,"high":270,"low":255,"close":270},{"time":"2026-04-07","open":270,"high":295,"low":270,"close":290},{"time":"2026-04-08","open":285,"high":295,"low":280,"close":280}],"泰坦女神瑞亞":[{"time":"2026-04-06","open":380,"high":415,"low":375,"close":405},{"time":"2026-04-07","open":405,"high":410,"low":390,"close":405},{"time":"2026-04-08","open":410,"high":410,"low":390,"close":390}]};
+// ===== Fallback 折線資料 (售價比) =====
+var fallbackHistory = (function() {
+    // 基礎售價比（每伺服器最近的參考值）
+    var bases = {
+        "太陽神阿波羅":300,"愛神丘比特":310,"勝利女神雅典娜":250,"美神維納斯":305,
+        "天神宙斯":250,"天后海拉":245,"戰神馬爾斯":325,"月亮女神阿緹蜜斯":250,
+        "海神波塞頓":285,"水蛇許德拉":385,"冥王黑帝斯":310,"火神赫發斯特斯":245,
+        "收獲女神蒂蜜特":305,"蛇髮女墨杜沙":280,"半人馬涅索斯":285,
+        "牛人彌諾陶洛斯":280,"泰坦女神瑞亞":390
+    };
+    var result = {};
+    var now = Date.now();
+    var keys = Object.keys(bases);
+    for (var k = 0; k < keys.length; k++) {
+        var server = keys[k], base = bases[server], points = [];
+        // 產生最近 3 天每 15 分鐘的模擬數據
+        for (var d = 2; d >= 0; d--) {
+            for (var h = 0; h < 24; h++) {
+                for (var m = 0; m < 60; m += 15) {
+                    var ts = now - d * 86400000 - (23-h) * 3600000 - (45-m) * 60000;
+                    var jitter = Math.round((Math.random() - 0.5) * 20);
+                    points.push({ time: Math.floor(ts / 1000), value: base + jitter });
+                }
+            }
+        }
+        result[server] = points;
+    }
+    return result;
+})();
 
 // ===== State =====
-var ohlcDataMap = {};
+var historyDataMap = {};
 // Deep copy fallback
 (function() {
-    var keys = Object.keys(fallbackOHLC);
+    var keys = Object.keys(fallbackHistory);
     for (var i = 0; i < keys.length; i++) {
-        ohlcDataMap[keys[i]] = fallbackOHLC[keys[i]].slice();
+        historyDataMap[keys[i]] = fallbackHistory[keys[i]].slice();
     }
 })();
 var miniCharts = {};
@@ -657,52 +713,55 @@ function stripPrefix(name) {
     return name.replace(/^\d+[\.\.\s]+/, '').trim();
 }
 
-// ===== Fetch OHLC from Sheets (gid=1) =====
-function fetchOHLC() {
-    return fetch(OHLC_CSV_URL).then(function(resp) {
+// ===== Fetch History from Sheets (gid=2) =====
+// CSV 格式: 伺服器名稱, 時間戳(Unix秒或ISO), 售價比
+function fetchHistory() {
+    return fetch(HISTORY_CSV_URL).then(function(resp) {
         return resp.text();
     }).then(function(text) {
         var rows = text.split('\n').slice(1);
         var map = {};
+        var cutoff = Math.floor(Date.now() / 1000) - DISPLAY_DAYS * 86400;
         rows.forEach(function(row) {
+            // 處理可能含逗號的 CSV（引號欄位）
             var cols = row.split(',');
-            if (cols.length >= 6) {
+            if (cols.length >= 3) {
                 var server = cols[0].trim().replace(/^"|"$/g, '');
-                var dateRaw = cols[1].trim().replace(/^"|"$/g, '');
-                var o = parseFloat(cols[2]), h = parseFloat(cols[3]);
-                var l = parseFloat(cols[4]), c = parseFloat(cols[5]);
-                if (!server || isNaN(o)) return;
-                var time = dateRaw;
-                if (dateRaw.indexOf('/') !== -1) {
-                    var parts = dateRaw.split('/');
-                    if (parts.length === 3) {
-                        time = parts[0].padStart(4,'0') + '-' + parts[1].padStart(2,'0') + '-' + parts[2].padStart(2,'0');
-                    } else if (parts.length === 2) {
-                        var y = new Date().getFullYear();
-                        time = y + '-' + parts[0].padStart(2,'0') + '-' + parts[1].padStart(2,'0');
-                    }
-                }
-                // Store with stripped name as key
+                var tsRaw = cols[1].trim().replace(/^"|"$/g, '');
+                var val = parseFloat(cols[2]);
+                if (!server || isNaN(val)) return;
                 var cleanName = stripPrefix(server);
+                // 解析時間：支援 Unix 秒數 或 ISO/日期格式
+                var ts;
+                if (/^\d{10,}$/.test(tsRaw)) {
+                    ts = parseInt(tsRaw);
+                } else {
+                    var d = new Date(tsRaw);
+                    if (isNaN(d.getTime())) return;
+                    ts = Math.floor(d.getTime() / 1000);
+                }
+                // 只保留 DISPLAY_DAYS 天內的資料
+                if (ts < cutoff) return;
                 if (!map[cleanName]) map[cleanName] = [];
-                map[cleanName].push({ time: time, open: o, high: h, low: l, close: c });
+                map[cleanName].push({ time: ts, value: val });
             }
         });
+        // 排序（時間由小到大）
         Object.keys(map).forEach(function(k) {
-            map[k].sort(function(a, b) { return a.time.localeCompare(b.time); });
+            map[k].sort(function(a, b) { return a.time - b.time; });
         });
         if (Object.keys(map).length > 0) {
-            ohlcDataMap = map;
+            historyDataMap = map;
         }
     }).catch(function(e) {
-        console.warn('OHLC fetch fallback:', e);
+        console.warn('History fetch fallback:', e);
     });
 }
 
-// ===== Create Mini Chart =====
+// ===== Create Mini Chart (折線圖) =====
 function createMiniChart(container, serverName) {
     var cleanName = stripPrefix(serverName);
-    var data = ohlcDataMap[cleanName];
+    var data = historyDataMap[cleanName];
     if (!data || data.length === 0) {
         container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.2);font-size:12px;">暫無數據</div>';
         return null;
@@ -713,26 +772,27 @@ function createMiniChart(container, serverName) {
         height: container.clientHeight,
         layout: { background: { type: 'solid', color: 'transparent' }, textColor: 'rgba(255,255,255,0.3)', fontSize: 10 },
         grid: { vertLines: { color: 'rgba(255,255,255,0.04)' }, horzLines: { color: 'rgba(255,255,255,0.04)' } },
-        rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.1, bottom: 0.1 } },
+        rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.15, bottom: 0.15 } },
         timeScale: { borderVisible: false, visible: false },
         crosshair: { mode: 0 },
         handleScroll: false, handleScale: false,
     });
-    var series = chart.addCandlestickSeries({
-        upColor: '#22c55e', downColor: '#ef4444',
-        borderUpColor: '#22c55e', borderDownColor: '#ef4444',
-        wickUpColor: '#22c55e', wickDownColor: '#ef4444',
+    var series = chart.addAreaSeries({
+        lineColor: '#C8963E',
+        topColor: 'rgba(200,150,62,0.3)',
+        bottomColor: 'rgba(200,150,62,0.02)',
+        lineWidth: 2,
     });
     series.setData(data);
     chart.timeScale().fitContent();
     return chart;
 }
 
-// ===== Create Modal Chart =====
+// ===== Create Modal Chart (折線圖 - 大圖) =====
 function createModalChart(serverName) {
     var container = document.getElementById('modalChartContainer');
     var cleanName = stripPrefix(serverName);
-    var data = ohlcDataMap[cleanName];
+    var data = historyDataMap[cleanName];
     if (modalChart) { modalChart.remove(); modalChart = null; }
     if (!data || data.length === 0) {
         container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);">暫無數據</div>';
@@ -744,16 +804,23 @@ function createModalChart(serverName) {
         layout: { background: { type: 'solid', color: 'rgba(0,0,0,0.2)' }, textColor: 'rgba(255,255,255,0.5)', fontSize: 12 },
         grid: { vertLines: { color: 'rgba(255,255,255,0.05)' }, horzLines: { color: 'rgba(255,255,255,0.05)' } },
         rightPriceScale: { borderColor: 'rgba(255,255,255,0.1)' },
-        timeScale: { borderColor: 'rgba(255,255,255,0.1)' },
+        timeScale: { borderColor: 'rgba(255,255,255,0.1)', timeVisible: true, secondsVisible: false },
         crosshair: {
             vertLine: { color: 'rgba(200,150,62,0.4)', labelBackgroundColor: '#C8963E' },
             horzLine: { color: 'rgba(200,150,62,0.4)', labelBackgroundColor: '#C8963E' },
         },
+        localization: {
+            priceFormatter: function(price) { return '1:' + Math.round(price); },
+        },
     });
-    var series = modalChart.addCandlestickSeries({
-        upColor: '#22c55e', downColor: '#ef4444',
-        borderUpColor: '#22c55e', borderDownColor: '#ef4444',
-        wickUpColor: '#22c55e', wickDownColor: '#ef4444',
+    var series = modalChart.addAreaSeries({
+        lineColor: '#C8963E',
+        topColor: 'rgba(200,150,62,0.25)',
+        bottomColor: 'rgba(200,150,62,0.01)',
+        lineWidth: 2,
+        crosshairMarkerRadius: 5,
+        crosshairMarkerBorderColor: '#C8963E',
+        crosshairMarkerBackgroundColor: '#1a1a2e',
     });
     series.setData(data);
     modalChart.timeScale().fitContent();
@@ -858,12 +925,12 @@ window.addEventListener('resize', function() {
 
 // ===== Init =====
 (function init() {
-    fetchOHLC().then(function() {
+    fetchHistory().then(function() {
         return fetchPrices();
     });
     // Auto refresh every 15 min
     setInterval(function() {
-        fetchOHLC().then(function() { return fetchPrices(); });
+        fetchHistory().then(function() { return fetchPrices(); });
     }, 15 * 60 * 1000);
 })();
 </script>
