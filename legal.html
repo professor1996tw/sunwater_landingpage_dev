@@ -57,6 +57,12 @@
         .nav-links { display: flex; gap: 28px; align-items: center; }
         .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 400; transition: color 0.3s; }
         .nav-links a:hover { color: var(--gold-light); }
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
         .nav-kyc {
             background: linear-gradient(135deg, #22c55e, #16a34a);
             color: #fff; padding: 8px 20px; border-radius: 8px; font-weight: 600;
@@ -406,12 +412,12 @@
 </footer>
 
 <!-- Coming Soon Modal -->
-<div class="modal-overlay" id="comingSoonModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+<div class="modal-overlay" id="comingSoonModal">
     <div style="background:var(--navy);border:1px solid var(--glass-border);border-radius:20px;padding:40px;text-align:center;max-width:400px;">
         <div style="font-size:48px;margin-bottom:16px;">🚧</div>
         <h3>準備上線中</h3>
         <p style="color:var(--text-secondary);margin-bottom:24px;">交易網正在緊鑼密鼓地建設中，敬請期待！</p>
-        <button onclick="document.getElementById('comingSoonModal').style.display='none'" style="background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#0a0a0a;padding:10px 32px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">我知道了</button>
+        <button onclick="document.getElementById('comingSoonModal').classList.remove('show')" style="background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#0a0a0a;padding:10px 32px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">我知道了</button>
     </div>
 </div>
 
@@ -424,10 +430,10 @@ document.getElementById('mobileClose').addEventListener('click', closeMobile);
 function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
 function showComingSoon(e) {
     e.preventDefault();
-    document.getElementById('comingSoonModal').style.display = 'flex';
+    document.getElementById('comingSoonModal').classList.add('show');
 }
 document.getElementById('comingSoonModal').addEventListener('click', function(e) {
-    if (e.target === this) this.style.display = 'none';
+    if (e.target === this) this.classList.remove('show');
 });
 
 // ===== Page Switching =====
