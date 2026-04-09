@@ -57,6 +57,14 @@
         .nav-links { display: flex; gap: 28px; align-items: center; }
         .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 400; transition: color 0.3s; }
         .nav-links a:hover { color: var(--gold-light); }
+        .nav-kyc {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff; padding: 8px 20px; border-radius: 8px; font-weight: 600;
+            font-size: 14px; text-decoration: none; transition: all 0.3s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .nav-kyc:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(34,197,94,0.4); }
+        .nav-kyc svg { flex-shrink: 0; }
         .nav-cta {
             background: linear-gradient(135deg, var(--gold), var(--gold-light));
             color: #0a0a0a; padding: 8px 22px; border-radius: 8px; font-weight: 600;
@@ -230,6 +238,10 @@
         <a href="./index.html#services">服務項目</a>
         <a href="./index.html#why">關於我們</a>
         <a href="./index.html#social">社群</a>
+        <a href="./kyc.html" class="nav-kyc">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
+            實名認證
+        </a>
         <a href="#" class="nav-cta" onclick="showComingSoon(event)">進入交易網 →</a>
     </div>
     <button class="nav-mobile-toggle" id="mobileToggle" aria-label="選單">☰</button>
@@ -242,6 +254,10 @@
     <a href="./index.html#services" onclick="closeMobile()">服務項目</a>
     <a href="./index.html#why" onclick="closeMobile()">關於我們</a>
     <a href="./index.html#social" onclick="closeMobile()">社群</a>
+    <a href="./kyc.html" class="nav-kyc" style="margin-top:16px;" onclick="closeMobile()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
+        實名認證
+    </a>
     <a href="#" class="nav-cta" style="margin-top:16px;" onclick="closeMobile();showComingSoon(event)">進入交易網 →</a>
 </div>
 
@@ -421,39 +437,4 @@ function switchPage(page) {
     pages.forEach(function(p) { p.classList.remove('active'); });
     // Deactivate all tabs
     var tabs = document.querySelectorAll('.tab-btn');
-    tabs.forEach(function(t) { t.classList.remove('active'); });
-    // Show target page
-    var target = document.getElementById('page-' + page);
-    if (target) target.classList.add('active');
-    // Activate corresponding tab
-    var tabMap = { terms: 0, risk: 1, privacy: 2, aml: 3 };
-    if (tabMap[page] !== undefined && tabs[tabMap[page]]) {
-        tabs[tabMap[page]].classList.add('active');
-    }
-    // Update URL without reload
-    var url = new URL(window.location);
-    url.searchParams.set('page', page);
-    history.replaceState(null, '', url);
-    // Update page title
-    var titleMap = {
-        terms: '服務條款',
-        risk: '風險揭露',
-        privacy: '隱私權政策',
-        aml: '反洗錢聲明'
-    };
-    document.title = (titleMap[page] || '法律聲明') + ' — 日央水原 SUNWATER';
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ===== Init: read URL param =====
-(function() {
-    var params = new URLSearchParams(window.location.search);
-    var page = params.get('page');
-    if (page && ['terms', 'risk', 'privacy', 'aml'].indexOf(page) !== -1) {
-        switchPage(page);
-    }
-})();
-</script>
-</body>
-</html>
+    tabs.forEach(function(t) { t.classList.
