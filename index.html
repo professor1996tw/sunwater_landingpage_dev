@@ -187,9 +187,84 @@
             margin-bottom: 24px; padding: 0 4px;
         }
         .price-header-bar h3 { font-size: 18px; font-weight: 700; }
+        .price-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
         .price-sync { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
         .price-sync .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; }
         @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+        /* ===== Share Button ===== */
+        .share-btn {
+            background: linear-gradient(135deg, rgba(200,150,62,0.15), rgba(56,189,248,0.1));
+            border: 1px solid rgba(200,150,62,0.3);
+            color: var(--gold-light); padding: 6px 16px; border-radius: 8px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.3s; font-family: 'Noto Sans TC', sans-serif;
+        }
+        .share-btn:hover { background: linear-gradient(135deg, rgba(200,150,62,0.25), rgba(56,189,248,0.15)); border-color: rgba(200,150,62,0.5); transform: translateY(-1px); }
+        .share-btn:active { transform: translateY(0); }
+        .share-btn.loading { opacity: 0.6; pointer-events: none; }
+        .share-btn svg { flex-shrink: 0; }
+        /* ===== Screenshot Watermark (hidden, only visible during capture) ===== */
+        .screenshot-watermark {
+            display: none;
+            padding: 24px 20px 20px;
+            background: var(--bg-deep);
+            border-top: 1px solid rgba(200,150,62,0.15);
+            margin-top: 20px;
+        }
+        .screenshot-watermark.capturing { display: flex !important; justify-content: space-between; align-items: center; }
+        .watermark-left { display: flex; align-items: center; gap: 14px; }
+        .watermark-logo { height: 50px; border-radius: 50%; }
+        .watermark-text { display: flex; flex-direction: column; }
+        .watermark-brand { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+        .watermark-sub { font-size: 11px; color: var(--text-secondary); letter-spacing: 2px; }
+        .watermark-right { display: flex; align-items: center; gap: 14px; }
+        .watermark-qr { height: 64px; width: 64px; border-radius: 8px; }
+        .watermark-line-text { display: flex; flex-direction: column; align-items: flex-end; }
+        .watermark-line-label { font-size: 14px; font-weight: 700; color: #06c755; }
+        .watermark-line-id { font-size: 11px; color: var(--text-secondary); }
+        /* ===== Share Result Modal ===== */
+        .share-modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 10000;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .share-modal-overlay.show { display: flex; }
+        .share-modal {
+            background: var(--navy); border: 1px solid rgba(200,150,62,0.2);
+            border-radius: 20px; padding: 28px; max-width: 500px; width: 100%;
+            text-align: center; position: relative;
+        }
+        .share-modal-close {
+            position: absolute; top: 12px; right: 16px; background: none; border: none;
+            color: var(--text-secondary); font-size: 22px; cursor: pointer;
+        }
+        .share-modal-close:hover { color: white; }
+        .share-modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+        .share-modal-preview { max-width: 100%; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--glass-border); }
+        .share-modal-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .share-action-btn {
+            padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s; border: none;
+            display: inline-flex; align-items: center; gap: 6px;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .share-action-btn.download {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            color: #0a0a0a;
+        }
+        .share-action-btn.download:hover { box-shadow: 0 4px 20px var(--gold-glow); }
+        .share-action-btn.native-share {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+        }
+        .share-action-btn.native-share:hover { box-shadow: 0 4px 20px rgba(34,197,94,0.4); }
+        .share-action-btn.copy-btn {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-primary); border: 1px solid var(--glass-border);
+        }
+        .share-action-btn.copy-btn:hover { background: rgba(255,255,255,0.12); }
+
         .price-grid {
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
         }
@@ -388,6 +463,7 @@
             .price-card-rate { font-size: 20px; }
             .price-modal { padding: 24px 18px; }
             .price-modal-chart { height: 240px; }
+            .share-modal { padding: 20px; }
         }
         @media (max-width: 480px) {
             .services-grid { grid-template-columns: 1fr; }
@@ -463,11 +539,39 @@
     <div class="section-label">Real-Time Pricing</div>
     <h1 class="section-title">天堂經典版 即時幣價</h1>
     <div class="divider" style="margin-bottom: 40px;"></div>
-    <div class="price-header-bar">
-        <h3>伺服器匯率 (TWD)</h3>
-        <div class="price-sync"><span class="dot"></span> <span id="syncTime">同步中...</span></div>
+    <!-- Capture area starts here -->
+    <div id="priceCapture">
+        <div class="price-header-bar">
+            <h3>伺服器匯率 (TWD)</h3>
+            <div class="price-header-right">
+                <button class="share-btn" id="shareBtn" onclick="captureAndShare()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    分享報價
+                </button>
+                <div class="price-sync"><span class="dot"></span> <span id="syncTime">同步中...</span></div>
+            </div>
+        </div>
+        <div class="price-grid" id="priceGrid"></div>
+        <!-- Screenshot Watermark: hidden, shown only during capture -->
+        <div class="screenshot-watermark" id="screenshotWatermark">
+            <div class="watermark-left">
+                <img class="watermark-logo" src="./images/logo.png" alt="日央水原"
+                     onerror="this.src='https://img3.pchome.net/di_downinfo/2025/0715/61db593796854c45a0d381e8c87403f8.png';">
+                <div class="watermark-text">
+                    <span class="watermark-brand">日央水原</span>
+                    <span class="watermark-sub">SUNWATER</span>
+                </div>
+            </div>
+            <div class="watermark-right">
+                <div class="watermark-line-text">
+                    <span class="watermark-line-label">加入 LINE</span>
+                    <span class="watermark-line-id">@321enghh</span>
+                </div>
+                <img class="watermark-qr" src="./images/line-qrcode.png" alt="LINE QR Code"
+                     onerror="this.style.display='none';">
+            </div>
+        </div>
     </div>
-    <div class="price-grid" id="priceGrid"></div>
 </section>
 <!-- Price Detail Modal -->
 <div class="price-modal-overlay" id="priceModal">
@@ -477,6 +581,28 @@
         <div class="price-modal-rate" id="modalServerRate">&mdash;<span>TWD</span></div>
         <div class="price-modal-volume" id="modalServerVolume"></div>
         <div class="price-modal-chart" id="modalChartContainer"></div>
+    </div>
+</div>
+<!-- Share Result Modal -->
+<div class="share-modal-overlay" id="shareModal">
+    <div class="share-modal">
+        <button class="share-modal-close" onclick="closeShareModal()">&times;</button>
+        <h3>報價截圖已產生</h3>
+        <img class="share-modal-preview" id="sharePreview" src="" alt="報價截圖">
+        <div class="share-modal-actions">
+            <button class="share-action-btn download" onclick="downloadShareImage()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                儲存圖片
+            </button>
+            <button class="share-action-btn native-share" id="nativeShareBtn" onclick="nativeShare()" style="display:none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                分享好友
+            </button>
+            <button class="share-action-btn copy-btn" onclick="copyShareImage()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                複製圖片
+            </button>
+        </div>
     </div>
 </div>
 <!-- Services -->
@@ -521,29 +647,10 @@
     <div class="section-title">交易流程</div>
     <div class="section-desc">簡單四步驟，輕鬆完成交易</div>
     <div class="flow-grid">
-        <div class="flow-step">
-            <div class="flow-num">1</div>
-            <h4>註冊帳號</h4>
-            <p>填寫基本資料<br>建立您的帳號</p>
-            <span class="flow-arrow">&rarr;</span>
-        </div>
-        <div class="flow-step">
-            <div class="flow-num">2</div>
-            <h4>完成 KYC</h4>
-            <p>上傳身分證件<br>完成身分驗證</p>
-            <span class="flow-arrow">&rarr;</span>
-        </div>
-        <div class="flow-step">
-            <div class="flow-num">3</div>
-            <h4>選購付款</h4>
-            <p>選擇商品<br>依付款方式匯款</p>
-            <span class="flow-arrow">&rarr;</span>
-        </div>
-        <div class="flow-step">
-            <div class="flow-num">4</div>
-            <h4>確認交付</h4>
-            <p>我方確認收款後<br>立即處理訂單</p>
-        </div>
+        <div class="flow-step"><div class="flow-num">1</div><h4>註冊帳號</h4><p>填寫基本資料<br>建立您的帳號</p><span class="flow-arrow">&rarr;</span></div>
+        <div class="flow-step"><div class="flow-num">2</div><h4>完成 KYC</h4><p>上傳身分證件<br>完成身分驗證</p><span class="flow-arrow">&rarr;</span></div>
+        <div class="flow-step"><div class="flow-num">3</div><h4>選購付款</h4><p>選擇商品<br>依付款方式匯款</p><span class="flow-arrow">&rarr;</span></div>
+        <div class="flow-step"><div class="flow-num">4</div><h4>確認交付</h4><p>我方確認收款後<br>立即處理訂單</p></div>
     </div>
 </section>
 <!-- Social -->
@@ -580,50 +687,17 @@
     <div class="section-title">常見問題</div>
     <div class="section-desc">關於天堂經典版天幣交易的常見疑問</div>
     <div class="faq-list">
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">天堂經典版天幣怎麼買？</button>
-            <div class="faq-answer">加入日央水原 LINE 官方帳號（@321enghh），告知需要的伺服器與金額，付款後由專人遊戲內面交，快速到帳。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">支援哪些伺服器？</button>
-            <div class="faq-answer">支援全部 17 個伺服器，包含太陽神阿波羅、愛神邱比特、勝利女神雅典娜、美神維納斯、天神宙斯、天后海拉、戰神馬爾斯、月亮女神阿緹蜜斯、海神波賽頓、水蛇許德拉、冥王黑帝斯、火神赫發斯特斯、收穫女神蒂蜜特、蛇髮女墨杜莎、半人馬涅索斯、牛人彌諾陶洛斯、泰坦女神瑞亞。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">天幣報價多久更新一次？</button>
-            <div class="faq-answer">網站報價每 15 分鐘自動更新，可隨時查詢各伺服器最新幣價走勢。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">交易安全嗎？</button>
-            <div class="faq-answer">日央水原為合法經營商行，採用透明報價與專人面交，交易過程全程可追蹤，保障買家權益。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">付款方式有哪些？</button>
-            <div class="faq-answer">支援銀行轉帳、LINE Pay 等方式，詳細付款資訊請透過 LINE 官方帳號洽詢。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">買完天幣多久會到？</button>
-            <div class="faq-answer">正常情況下付款確認後 5-15 分鐘內完成遊戲內面交到帳。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">有最低購買金額嗎？</button>
-            <div class="faq-answer">最低購買金額為新台幣 1,000 元，可依需求自由選擇購買數量，詳情請洽 LINE 客服。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">天幣價格為什麼會波動？</button>
-            <div class="faq-answer">天幣價格受遊戲內供需、伺服器活躍度及市場行情影響，日央水原提供即時報價，讓您掌握最佳買入時機。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">如何查詢即時天幣報價？</button>
-            <div class="faq-answer">直接進入日央水原官網 sunwater.me，首頁即顯示全伺服器即時幣價與 K 線走勢圖，每 15 分鐘自動更新。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">為什麼需要實名認證？</button>
-            <div class="faq-answer">實名認證是為了保障交易雙方權益，防止盜用帳號或不法交易。完成認證後即可享有更快速的交易流程與完整的售後保障。</div>
-        </div>
-        <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">如何避免天幣交易詐騙？</button>
-            <div class="faq-answer">請認明日央水原官方 LINE 帳號（@321enghh），不要透過私人帳號或來路不明的管道交易。官方不會主動要求提供遊戲帳號密碼，付款前請務必確認對方身分。</div>
-        </div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">天堂經典版天幣怎麼買？</button><div class="faq-answer">加入日央水原 LINE 官方帳號（@321enghh），告知需要的伺服器與金額，付款後由專人遊戲內面交，快速到帳。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">支援哪些伺服器？</button><div class="faq-answer">支援全部 17 個伺服器，包含太陽神阿波羅、愛神邱比特、勝利女神雅典娜、美神維納斯、天神宙斯、天后海拉、戰神馬爾斯、月亮女神阿緹蜜斯、海神波賽頓、水蛇許德拉、冥王黑帝斯、火神赫發斯特斯、收穫女神蒂蜜特、蛇髮女墨杜莎、半人馬涅索斯、牛人彌諾陶洛斯、泰坦女神瑞亞。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">天幣報價多久更新一次？</button><div class="faq-answer">網站報價每 15 分鐘自動更新，可隨時查詢各伺服器最新幣價走勢。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">交易安全嗎？</button><div class="faq-answer">日央水原為合法經營商行，採用透明報價與專人面交，交易過程全程可追蹤，保障買家權益。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">付款方式有哪些？</button><div class="faq-answer">支援銀行轉帳、LINE Pay 等方式，詳細付款資訊請透過 LINE 官方帳號洽詢。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">買完天幣多久會到？</button><div class="faq-answer">正常情況下付款確認後 5-15 分鐘內完成遊戲內面交到帳。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">有最低購買金額嗎？</button><div class="faq-answer">最低購買金額為新台幣 1,000 元，可依需求自由選擇購買數量，詳情請洽 LINE 客服。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">天幣價格為什麼會波動？</button><div class="faq-answer">天幣價格受遊戲內供需、伺服器活躍度及市場行情影響，日央水原提供即時報價，讓您掌握最佳買入時機。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">如何查詢即時天幣報價？</button><div class="faq-answer">直接進入日央水原官網 sunwater.me，首頁即顯示全伺服器即時幣價與 K 線走勢圖，每 15 分鐘自動更新。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">為什麼需要實名認證？</button><div class="faq-answer">實名認證是為了保障交易雙方權益，防止盜用帳號或不法交易。完成認證後即可享有更快速的交易流程與完整的售後保障。</div></div>
+        <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">如何避免天幣交易詐騙？</button><div class="faq-answer">請認明日央水原官方 LINE 帳號（@321enghh），不要透過私人帳號或來路不明的管道交易。官方不會主動要求提供遊戲帳號密碼，付款前請務必確認對方身分。</div></div>
     </div>
 </section>
 <noscript>
@@ -659,6 +733,8 @@
 </div>
 <!-- Lightweight Charts (TradingView) -->
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<!-- html2canvas for screenshot -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 // ===== Navigation =====
 var nav = document.getElementById('nav');
@@ -675,10 +751,7 @@ function initScrollAnimations() {
     if (!elements.length) return;
     var observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
-            }
+            if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
         });
     }, { threshold: 0.05, rootMargin: '0px 0px 80px 0px' });
     elements.forEach(function(el) { observer.observe(el); });
@@ -697,8 +770,7 @@ initScrollAnimations();
     for (var i = 0; i < (isMob ? 12 : 28); i++) {
         var p = document.createElement('div');
         p.className = 'particle';
-        p.style.left = Math.random()*100+'%';
-        p.style.top = Math.random()*100+'%';
+        p.style.left = Math.random()*100+'%'; p.style.top = Math.random()*100+'%';
         p.style.setProperty('--dur', (3+Math.random()*5)+'s');
         p.style.setProperty('--delay', (Math.random()*8)+'s');
         var sz = 1.5+Math.random()*2.5;
@@ -716,21 +788,16 @@ var PRICE_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/exp
 var HISTORY_SHEET_ID = '1AjGfuoODgDwAmySJXnadfNbqby_olJx1gz-hx_TCPUo';
 var HISTORY_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + HISTORY_SHEET_ID + '/export?format=csv&gid=0';
 var DISPLAY_DAYS = 5;
-// ===== State =====
 var historyDataMap = {};
 var miniCharts = {};
 var modalChart = null;
-var volumeMap = {}; // 儲存各伺服器天幣量
-function stripPrefix(name) {
-    return name.replace(/^\d+[\.\.\s]+/, '').trim();
-}
+var volumeMap = {};
+var shareImageBlob = null; // 儲存截圖 blob
+function stripPrefix(name) { return name.replace(/^\d+[\.\.\s]+/, '').trim(); }
 // ===== Fetch History =====
 function fetchHistory() {
-    return fetch(HISTORY_CSV_URL).then(function(resp) {
-        return resp.text();
-    }).then(function(text) {
-        var rows = text.split('\n').slice(1);
-        var map = {};
+    return fetch(HISTORY_CSV_URL).then(function(resp) { return resp.text(); }).then(function(text) {
+        var rows = text.split('\n').slice(1); var map = {};
         var cutoff = Math.floor(Date.now() / 1000) - DISPLAY_DAYS * 86400;
         rows.forEach(function(row) {
             var cols = row.split(',');
@@ -741,21 +808,14 @@ function fetchHistory() {
                 if (!server || isNaN(val)) return;
                 var cleanName = stripPrefix(server);
                 var ts;
-                if (/^\d{10,}$/.test(tsRaw)) {
-                    ts = parseInt(tsRaw);
-                } else {
-                    var d = new Date(tsRaw);
-                    if (isNaN(d.getTime())) return;
-                    ts = Math.floor(d.getTime() / 1000);
-                }
+                if (/^\d{10,}$/.test(tsRaw)) { ts = parseInt(tsRaw); }
+                else { var d = new Date(tsRaw); if (isNaN(d.getTime())) return; ts = Math.floor(d.getTime() / 1000); }
                 if (ts < cutoff) return;
                 if (!map[cleanName]) map[cleanName] = [];
                 map[cleanName].push({ time: ts, value: val });
             }
         });
-        Object.keys(map).forEach(function(k) {
-            map[k].sort(function(a, b) { return a.time - b.time; });
-        });
+        Object.keys(map).forEach(function(k) { map[k].sort(function(a, b) { return a.time - b.time; }); });
         if (Object.keys(map).length > 0) { historyDataMap = map; }
     }).catch(function(e) { console.warn('History fetch fallback:', e); });
 }
@@ -774,15 +834,10 @@ function createMiniChart(container, serverName) {
         grid: { vertLines: { color: 'rgba(255,255,255,0.04)' }, horzLines: { color: 'rgba(255,255,255,0.04)' } },
         rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.15, bottom: 0.15 } },
         timeScale: { borderVisible: false, visible: false },
-        crosshair: { mode: 0 },
-        handleScroll: false, handleScale: false,
+        crosshair: { mode: 0 }, handleScroll: false, handleScale: false,
     });
-    var series = chart.addAreaSeries({
-        lineColor: '#C8963E', topColor: 'rgba(200,150,62,0.3)', bottomColor: 'rgba(200,150,62,0.02)', lineWidth: 2,
-    });
-    series.setData(data);
-    chart.timeScale().fitContent();
-    return chart;
+    var series = chart.addAreaSeries({ lineColor: '#C8963E', topColor: 'rgba(200,150,62,0.3)', bottomColor: 'rgba(200,150,62,0.02)', lineWidth: 2 });
+    series.setData(data); chart.timeScale().fitContent(); return chart;
 }
 // ===== Create Modal Chart =====
 function createModalChart(serverName) {
@@ -790,50 +845,25 @@ function createModalChart(serverName) {
     var cleanName = stripPrefix(serverName);
     var data = historyDataMap[cleanName];
     if (modalChart) { modalChart.remove(); modalChart = null; }
-    if (!data || data.length === 0) {
-        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);">暫無數據</div>';
-        return;
-    }
+    if (!data || data.length === 0) { container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);">暫無數據</div>'; return; }
     container.innerHTML = '';
     modalChart = LightweightCharts.createChart(container, {
         width: container.clientWidth, height: container.clientHeight,
         layout: { background: { type: 'solid', color: 'rgba(0,0,0,0.2)' }, textColor: 'rgba(255,255,255,0.5)', fontSize: 12 },
         grid: { vertLines: { color: 'rgba(255,255,255,0.05)' }, horzLines: { color: 'rgba(255,255,255,0.05)' } },
         rightPriceScale: { borderColor: 'rgba(255,255,255,0.1)' },
-        timeScale: {
-            borderColor: 'rgba(255,255,255,0.1)', timeVisible: true, secondsVisible: false,
-            tickMarkFormatter: function(ts) {
-                var d = new Date(ts * 1000);
-                var h = d.getUTCHours() + 8; var day = d.getUTCDate(); var m = d.getUTCMonth() + 1;
-                if (h >= 24) { h -= 24; day += 1; }
-                var min = d.getUTCMinutes();
-                return (h < 10 ? '0' + h : h) + ':' + (min < 10 ? '0' + min : min);
-            },
+        timeScale: { borderColor: 'rgba(255,255,255,0.1)', timeVisible: true, secondsVisible: false,
+            tickMarkFormatter: function(ts) { var d=new Date(ts*1000);var h=d.getUTCHours()+8;var day=d.getUTCDate();if(h>=24){h-=24;day+=1;}var min=d.getUTCMinutes();return(h<10?'0'+h:h)+':'+(min<10?'0'+min:min); },
         },
-        crosshair: {
-            mode: LightweightCharts.CrosshairMode.Normal,
-            vertLine: { color: 'rgba(200,150,62,0.4)', labelBackgroundColor: '#C8963E' },
-            horzLine: { color: 'rgba(200,150,62,0.4)', labelBackgroundColor: '#C8963E' },
-        },
+        crosshair: { mode: LightweightCharts.CrosshairMode.Normal, vertLine:{color:'rgba(200,150,62,0.4)',labelBackgroundColor:'#C8963E'}, horzLine:{color:'rgba(200,150,62,0.4)',labelBackgroundColor:'#C8963E'} },
         handleScroll: false, handleScale: false,
         localization: {
             priceFormatter: function(price) { return '1:' + Math.round(price); },
-            timeFormatter: function(ts) {
-                var d = new Date(ts * 1000);
-                var m = d.getUTCMonth() + 1; var day = d.getUTCDate();
-                var h = d.getUTCHours() + 8;
-                if (h >= 24) { h -= 24; day += 1; }
-                var min = d.getUTCMinutes();
-                return (m < 10 ? '0' + m : m) + '/' + (day < 10 ? '0' + day : day) + ' ' + (h < 10 ? '0' + h : h) + ':' + (min < 10 ? '0' + min : min);
-            },
+            timeFormatter: function(ts) { var d=new Date(ts*1000);var m=d.getUTCMonth()+1;var day=d.getUTCDate();var h=d.getUTCHours()+8;if(h>=24){h-=24;day+=1;}var min=d.getUTCMinutes();return(m<10?'0'+m:m)+'/'+(day<10?'0'+day:day)+' '+(h<10?'0'+h:h)+':'+(min<10?'0'+min:min); },
         },
     });
-    var series = modalChart.addAreaSeries({
-        lineColor: '#C8963E', topColor: 'rgba(200,150,62,0.25)', bottomColor: 'rgba(200,150,62,0.01)',
-        lineWidth: 2, crosshairMarkerRadius: 5, crosshairMarkerBorderColor: '#C8963E', crosshairMarkerBackgroundColor: '#1a1a2e',
-    });
-    series.setData(data);
-    modalChart.timeScale().fitContent();
+    var series = modalChart.addAreaSeries({ lineColor:'#C8963E',topColor:'rgba(200,150,62,0.25)',bottomColor:'rgba(200,150,62,0.01)',lineWidth:2,crosshairMarkerRadius:5,crosshairMarkerBorderColor:'#C8963E',crosshairMarkerBackgroundColor:'#1a1a2e' });
+    series.setData(data); modalChart.timeScale().fitContent();
 }
 // ===== Modal =====
 function openPriceModal(serverName, rate) {
@@ -841,102 +871,157 @@ function openPriceModal(serverName, rate) {
     document.getElementById('modalServerRate').innerHTML = rate + '<span> TWD</span>';
     var cleanName = stripPrefix(serverName);
     var volEl = document.getElementById('modalServerVolume');
-    if (volumeMap[cleanName]) {
-        volEl.textContent = '天幣量:' + volumeMap[cleanName] + '萬顆';
-    } else {
-        volEl.textContent = '';
-    }
+    if (volumeMap[cleanName]) { volEl.textContent = '天幣量:' + volumeMap[cleanName] + '萬顆'; } else { volEl.textContent = ''; }
     document.getElementById('priceModal').classList.add('show');
     setTimeout(function() { createModalChart(serverName); }, 50);
 }
-function closePriceModal() {
-    document.getElementById('priceModal').classList.remove('show');
-    if (modalChart) { modalChart.remove(); modalChart = null; }
-}
+function closePriceModal() { document.getElementById('priceModal').classList.remove('show'); if (modalChart) { modalChart.remove(); modalChart = null; } }
 document.getElementById('priceModal').addEventListener('click', function(e) { if (e.target === this) closePriceModal(); });
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePriceModal(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closePriceModal(); closeShareModal(); } });
 // ===== Render Price Cards =====
 function renderPriceCards(data) {
-    var grid = document.getElementById('priceGrid');
-    grid.innerHTML = '';
+    var grid = document.getElementById('priceGrid'); grid.innerHTML = '';
     data.forEach(function(item, i) {
         var card = document.createElement('div');
-        card.className = 'price-card';
-        card.setAttribute('data-server', item.name);
-        card.setAttribute('data-rate', item.value);
+        card.className = 'price-card'; card.setAttribute('data-server', item.name); card.setAttribute('data-rate', item.value);
         card.onclick = function() { openPriceModal(item.name, item.value); };
         var volText = '';
         if (item.volume && item.volume !== '') {
             var volNum = parseFloat(item.volume);
-            if (!isNaN(volNum)) {
-                volText = '<div class="price-card-volume">天幣量:' + volNum + '萬顆</div>';
-                volumeMap[stripPrefix(item.name)] = volNum;
-            }
+            if (!isNaN(volNum)) { volText = '<div class="price-card-volume">天幣量:' + volNum + '萬顆</div>'; volumeMap[stripPrefix(item.name)] = volNum; }
         }
-        card.innerHTML =
-            '<div class="price-card-header">' +
-                '<div class="price-card-name">' + item.name + '</div>' +
-                '<div><div class="price-card-rate">' + item.value + '</div>' +
-                '<div class="price-card-unit">TWD</div>' + volText + '</div>' +
-            '</div>' +
-            '<div class="price-card-chart" id="minichart-' + i + '"></div>';
+        card.innerHTML = '<div class="price-card-header"><div class="price-card-name">' + item.name + '</div><div><div class="price-card-rate">' + item.value + '</div><div class="price-card-unit">TWD</div>' + volText + '</div></div><div class="price-card-chart" id="minichart-' + i + '"></div>';
         grid.appendChild(card);
     });
     requestAnimationFrame(function() {
         setTimeout(function() {
             data.forEach(function(item, i) {
                 var container = document.getElementById('minichart-' + i);
-                if (container) {
-                    var key = stripPrefix(item.name);
-                    if (miniCharts[key]) { try { miniCharts[key].remove(); } catch(e) {} }
-                    miniCharts[key] = createMiniChart(container, item.name);
-                }
+                if (container) { var key = stripPrefix(item.name); if (miniCharts[key]) { try { miniCharts[key].remove(); } catch(e) {} } miniCharts[key] = createMiniChart(container, item.name); }
             });
         }, 100);
     });
 }
 // ===== Fetch Prices =====
 function fetchPrices() {
-    return fetch(PRICE_CSV_URL).then(function(resp) {
-        return resp.text();
-    }).then(function(csvText) {
+    return fetch(PRICE_CSV_URL).then(function(resp) { return resp.text(); }).then(function(csvText) {
         var rows = csvText.split('\n').slice(1);
         var priceDataList = rows.map(function(row) {
             var cols = row.split(',');
-            if (cols.length >= 8) {
-                return {
-                    name: cols[0].trim().replace(/^"|"$/g, ''),
-                    value: cols[1].trim().replace(/^"|"$/g, ''),
-                    chartPrice: parseFloat(cols[7].trim().replace(/^"|"$/g, '')),
-                    volume: cols.length >= 12 ? cols[11].trim().replace(/^"|"$/g, '') : ''
-                };
-            }
+            if (cols.length >= 8) { return { name: cols[0].trim().replace(/^"|"$/g,''), value: cols[1].trim().replace(/^"|"$/g,''), chartPrice: parseFloat(cols[7].trim().replace(/^"|"$/g,'')), volume: cols.length >= 12 ? cols[11].trim().replace(/^"|"$/g,'') : '' }; }
             return null;
         }).filter(function(item) { return item && item.name; });
         var nowTs = Math.floor(Date.now() / 1000);
         priceDataList.forEach(function(item) {
-            var cleanName = stripPrefix(item.name);
-            var price = item.chartPrice;
+            var cleanName = stripPrefix(item.name); var price = item.chartPrice;
             if (isNaN(price)) return;
             if (!historyDataMap[cleanName]) historyDataMap[cleanName] = [];
             var arr = historyDataMap[cleanName];
-            if (arr.length > 0 && Math.abs(arr[arr.length - 1].time - nowTs) < 60) {
-                arr[arr.length - 1] = { time: nowTs, value: price };
-            } else {
-                arr.push({ time: nowTs, value: price });
-            }
+            if (arr.length > 0 && Math.abs(arr[arr.length-1].time - nowTs) < 60) { arr[arr.length-1] = {time:nowTs,value:price}; } else { arr.push({time:nowTs,value:price}); }
         });
         renderPriceCards(priceDataList);
-        var now = new Date();
-        var pad = function(n) { return String(n).padStart(2, '0'); };
-        document.getElementById('syncTime').textContent =
-            now.getFullYear() + '/' + pad(now.getMonth()+1) + '/' + pad(now.getDate()) + ' ' +
-            pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds()) + ' 同步';
+        var now = new Date(); var pad = function(n) { return String(n).padStart(2,'0'); };
+        document.getElementById('syncTime').textContent = now.getFullYear()+'/'+pad(now.getMonth()+1)+'/'+pad(now.getDate())+' '+pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds())+' 同步';
     }).catch(function(err) {
         console.error('Price fetch error:', err);
-        document.getElementById('priceGrid').innerHTML =
-            '<p style="color:var(--text-secondary);text-align:center;padding:40px;grid-column:1/-1;">報價載入中，請稍後重新整理...</p>';
+        document.getElementById('priceGrid').innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:40px;grid-column:1/-1;">報價載入中，請稍後重新整理...</p>';
     });
+}
+// ===== Share Screenshot Feature =====
+function captureAndShare() {
+    var btn = document.getElementById('shareBtn');
+    btn.classList.add('loading');
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> 產生中...';
+    var captureEl = document.getElementById('priceCapture');
+    var watermark = document.getElementById('screenshotWatermark');
+    var shareButton = document.getElementById('shareBtn');
+    // 顯示浮水印、隱藏分享按鈕
+    watermark.classList.add('capturing');
+    shareButton.style.visibility = 'hidden';
+    // 等一下讓 DOM 更新
+    setTimeout(function() {
+        html2canvas(captureEl, {
+            backgroundColor: '#050510',
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+        }).then(function(canvas) {
+            // 隱藏浮水印、還原按鈕
+            watermark.classList.remove('capturing');
+            shareButton.style.visibility = 'visible';
+            btn.classList.remove('loading');
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> 分享報價';
+            // 轉成 blob
+            canvas.toBlob(function(blob) {
+                shareImageBlob = blob;
+                // 顯示預覽 modal
+                var preview = document.getElementById('sharePreview');
+                preview.src = URL.createObjectURL(blob);
+                // 檢查是否支援 Web Share API
+                if (navigator.share && navigator.canShare) {
+                    document.getElementById('nativeShareBtn').style.display = 'inline-flex';
+                } else {
+                    document.getElementById('nativeShareBtn').style.display = 'none';
+                }
+                document.getElementById('shareModal').classList.add('show');
+            }, 'image/png');
+        }).catch(function(err) {
+            console.error('Screenshot error:', err);
+            watermark.classList.remove('capturing');
+            shareButton.style.visibility = 'visible';
+            btn.classList.remove('loading');
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> 分享報價';
+            alert('截圖產生失敗，請稍後再試');
+        });
+    }, 100);
+}
+function closeShareModal() {
+    document.getElementById('shareModal').classList.remove('show');
+}
+document.getElementById('shareModal').addEventListener('click', function(e) { if (e.target === this) closeShareModal(); });
+function downloadShareImage() {
+    if (!shareImageBlob) return;
+    var now = new Date();
+    var pad = function(n) { return String(n).padStart(2, '0'); };
+    var filename = '日央水原報價_' + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + '_' + pad(now.getHours()) + pad(now.getMinutes()) + '.png';
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(shareImageBlob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+function nativeShare() {
+    if (!shareImageBlob || !navigator.share) return;
+    var now = new Date();
+    var pad = function(n) { return String(n).padStart(2, '0'); };
+    var filename = '日央水原報價_' + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + '.png';
+    var file = new File([shareImageBlob], filename, { type: 'image/png' });
+    navigator.share({
+        title: '天堂經典版即時幣價 - 日央水原',
+        text: '天堂經典版各伺服器即時天幣報價 sunwater.me',
+        files: [file]
+    }).catch(function(err) {
+        console.log('Share cancelled or failed:', err);
+    });
+}
+function copyShareImage() {
+    if (!shareImageBlob) return;
+    try {
+        navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': shareImageBlob })
+        ]).then(function() {
+            var btn = document.querySelector('.copy-btn');
+            var origText = btn.innerHTML;
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> 已複製!';
+            setTimeout(function() { btn.innerHTML = origText; }, 2000);
+        }).catch(function() {
+            alert('複製失敗，請改用儲存圖片');
+        });
+    } catch(e) {
+        alert('此瀏覽器不支援複製圖片，請改用儲存圖片');
+    }
 }
 // ===== Resize handler =====
 var resizeTimer;
@@ -945,9 +1030,7 @@ window.addEventListener('resize', function() {
     resizeTimer = setTimeout(function() {
         Object.keys(miniCharts).forEach(function(key) {
             var chart = miniCharts[key];
-            if (chart && chart.chartElement) {
-                try { var el = chart.chartElement().parentElement; if (el) chart.resize(el.clientWidth, el.clientHeight); } catch(e) {}
-            }
+            if (chart && chart.chartElement) { try { var el = chart.chartElement().parentElement; if (el) chart.resize(el.clientWidth, el.clientHeight); } catch(e) {} }
         });
     }, 200);
 });
@@ -966,28 +1049,15 @@ window.addEventListener('resize', function() {
     "url": "https://sunwater.me/",
     "logo": "https://sunwater.me/images/logo.png",
     "description": "天堂經典版天幣即時報價與交易平台，提供 NC 天幣買賣、幣價查詢、遊戲虛寶交易，安全交易・即時到帳。",
-    "sameAs": [
-        "https://www.facebook.com/profile.php?id=100064047333025",
-        "https://www.instagram.com/sunwater168168/",
-        "https://www.youtube.com/@sunwater_game.service",
-        "https://www.tiktok.com/@sunwater168168",
-        "https://line.me/R/ti/p/@321enghh"
-    ]
+    "sameAs": ["https://www.facebook.com/profile.php?id=100064047333025","https://www.instagram.com/sunwater168168/","https://www.youtube.com/@sunwater_game.service","https://www.tiktok.com/@sunwater168168","https://line.me/R/ti/p/@321enghh"]
 }
 </script>
 <script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "日央水原 SUNWATER",
-    "url": "https://sunwater.me/",
-    "description": "天堂經典版天幣即時報價與買賣交易平台"
-}
+{ "@context": "https://schema.org", "@type": "WebSite", "name": "日央水原 SUNWATER", "url": "https://sunwater.me/", "description": "天堂經典版天幣即時報價與買賣交易平台" }
 </script>
 <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
+    "@context": "https://schema.org", "@type": "FAQPage",
     "mainEntity": [
         { "@type": "Question", "name": "天堂經典版天幣怎麼買？", "acceptedAnswer": { "@type": "Answer", "text": "加入日央水原 LINE 官方帳號（@321enghh），告知需要的伺服器與金額，付款後由專人遊戲內面交，快速到帳。" } },
         { "@type": "Question", "name": "支援哪些伺服器？", "acceptedAnswer": { "@type": "Answer", "text": "支援全部 17 個伺服器，包含太陽神阿波羅、愛神邱比特、勝利女神雅典娜、美神維納斯、天神宙斯、天后海拉、戰神馬爾斯、月亮女神阿緹蜜斯、海神波賽頓、水蛇乞德拉、冥王黑帝斯、火神赫發斯特斯、收穫女神蒂蜜特、蛇髮女墨杜莎、半人馬乞索斯、牛人彌諾陶洛斯、泰坦女神瑞亞。" } },
