@@ -193,16 +193,50 @@
 <!-- Categories Filter (預留，目前只顯示，未連結) -->
 <div class="categories">
     <a href="./" class="category-chip active">全部文章</a>
-    <a href="./" class="category-chip">裝備攻略</a>
-    <a href="./" class="category-chip">伺服器介紹</a>
-    <a href="./" class="category-chip">價格分析</a>
-    <a href="./" class="category-chip">交易教學</a>
+    <a href="./" class="category-chip">市場情報</a>
+    <a href="./" class="category-chip">日央消息</a>
     <a href="./" class="category-chip">防詐騙</a>
 </div>
 <!-- News Grid -->
 <main class="news-list">
     <div class="news-grid">
-        <!-- 2026/04/23 最新 -->
+        <!-- 2026/04/24 最新（日央消息）-->
+        <a href="./第一次跟日央水原交易-完整流程/" class="news-card">
+            <div class="news-card-image" style="background-image: url('../images/news/trading-guide.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
+            <div class="news-card-body">
+                <div class="news-card-meta">
+                    <span class="news-category">日央消息</span>
+                    <span>2026/04/24</span>
+                </div>
+                <h2 class="news-card-title">第一次跟日央水原交易？5 分鐘看完完整流程</h2>
+                <p class="news-card-excerpt">從加入 LINE 到收貨，帶你走過完整交易 6 步驟。先款後幣、KYC、退款規則，所有你需要知道的細節。</p>
+            </div>
+        </a>
+        <!-- 2026/04/24（防詐騙）-->
+        <a href="./天幣交易-代付代匯-2大付款陷阱/" class="news-card">
+            <div class="news-card-image" style="background-image: url('../images/news/fraud-payment.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
+            <div class="news-card-body">
+                <div class="news-card-meta">
+                    <span class="news-category">防詐騙</span>
+                    <span>2026/04/24</span>
+                </div>
+                <h2 class="news-card-title">天幣交易 2 大付款陷阱：代付與代匯</h2>
+                <p class="news-card-excerpt">為什麼正規交易商堅持同名匯款？解析代付、代匯背後的 2 個法律與風控風險，保護買家避開高風險交易。</p>
+            </div>
+        </a>
+        <!-- 2026/04/24（市場情報）-->
+        <a href="./5日K線速報-20260424/" class="news-card">
+            <div class="news-card-image" style="background-image: url('../images/news/weekly-20260424.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
+            <div class="news-card-body">
+                <div class="news-card-meta">
+                    <span class="news-category">市場情報</span>
+                    <span>2026/04/24</span>
+                </div>
+                <h2 class="news-card-title">【5 日 K 線速報】2026/04/19~04/24：新服效應蔓延，12 服天幣變便宜</h2>
+                <p class="news-card-excerpt">18 服中 12 服天幣變便宜、5 服變貴。天神宙斯漲 28.1%、水蛇許德拉跌 30.4%。每 5 日更新一次。</p>
+            </div>
+        </a>
+        <!-- 2026/04/23 -->
         <a href="./騎士新手裝備-1到50級採購清單/" class="news-card">
             <div class="news-card-image" style="background-image: url('../images/news/knight.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
             <div class="news-card-body">
@@ -293,24 +327,12 @@ document.getElementById('comingSoonModal').addEventListener('click', function(e)
     "mainEntity": {
         "@type": "ItemList",
         "itemListElement": [
-            {
-                "@type": "ListItem",
-                "position": 1,
-                "url": "https://sunwater.me/news/騎士新手裝備-1到50級採購清單/",
-                "name": "騎士新手裝備推薦：1-50 級每階段優先採購清單"
-            },
-            {
-                "@type": "ListItem",
-                "position": 2,
-                "url": "https://sunwater.me/news/天幣代購詐騙-7個檢查要點/",
-                "name": "天幣代購詐騙：7 個交易前必查的安全要點"
-            },
-            {
-                "@type": "ListItem",
-                "position": 3,
-                "url": "https://sunwater.me/news/太陽神阿波羅伺服器完整解析/",
-                "name": "太陽神阿波羅伺服器完整解析：人口、經濟與幣價"
-            }
+            { "@type": "ListItem", "position": 1, "url": "https://sunwater.me/news/第一次跟日央水原交易-完整流程/", "name": "第一次跟日央水原交易？5 分鐘看完完整流程" },
+            { "@type": "ListItem", "position": 2, "url": "https://sunwater.me/news/天幣交易-代付代匯-2大付款陷阱/", "name": "天幣交易 2 大付款陷阱：代付與代匯" },
+            { "@type": "ListItem", "position": 3, "url": "https://sunwater.me/news/5日K線速報-20260424/", "name": "【5 日 K 線速報】2026/04/19~04/24：新服效應蔓延，12 服天幣變便宜" },
+            { "@type": "ListItem", "position": 4, "url": "https://sunwater.me/news/騎士新手裝備-1到50級採購清單/", "name": "騎士新手裝備推薦：1-50 級每階段優先採購清單" },
+            { "@type": "ListItem", "position": 5, "url": "https://sunwater.me/news/天幣代購詐騙-7個檢查要點/", "name": "天幣代購詐騙:7 個交易前必查的安全要點" },
+            { "@type": "ListItem", "position": 6, "url": "https://sunwater.me/news/太陽神阿波羅伺服器完整解析/", "name": "太陽神阿波羅伺服器完整解析:人口、經濟與幣價" }
         ]
     }
 }
