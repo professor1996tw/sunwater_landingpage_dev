@@ -192,16 +192,16 @@
 </section>
 <!-- Categories Filter (預留，目前只顯示，未連結) -->
 <div class="categories">
-    <a href="./" class="category-chip active">全部文章</a>
-    <a href="./" class="category-chip">市場情報</a>
-    <a href="./" class="category-chip">日央消息</a>
-    <a href="./" class="category-chip">防詐騙</a>
+    <a href="#" class="category-chip active" data-filter="all">全部文章</a>
+    <a href="#" class="category-chip" data-filter="市場情報">市場情報</a>
+    <a href="#" class="category-chip" data-filter="日央消息">日央消息</a>
+    <a href="#" class="category-chip" data-filter="防詐騙">防詐騙</a>
 </div>
 <!-- News Grid -->
 <main class="news-list">
     <div class="news-grid">
         <!-- 2026/04/24 最新（日央消息）-->
-        <a href="./第一次跟日央水原交易-完整流程/" class="news-card">
+        <a href="./第一次跟日央水原交易-完整流程/" class="news-card" data-category="日央消息">
             <div class="news-card-image" style="background-image: url('../images/news/trading-guide.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
             <div class="news-card-body">
                 <div class="news-card-meta">
@@ -213,7 +213,7 @@
             </div>
         </a>
         <!-- 2026/04/24（防詐騙）-->
-        <a href="./天幣交易-代付代匯-2大付款陷阱/" class="news-card">
+        <a href="./天幣交易-代付代匯-2大付款陷阱/" class="news-card" data-category="防詐騙">
             <div class="news-card-image" style="background-image: url('../images/news/fraud-payment.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
             <div class="news-card-body">
                 <div class="news-card-meta">
@@ -225,7 +225,7 @@
             </div>
         </a>
         <!-- 2026/04/24（市場情報）-->
-        <a href="./5日K線速報-20260424/" class="news-card">
+        <a href="./5日K線速報-20260424/" class="news-card" data-category="市場情報">
             <div class="news-card-image" style="background-image: url('../images/news/weekly-20260424.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
             <div class="news-card-body">
                 <div class="news-card-meta">
@@ -236,20 +236,8 @@
                 <p class="news-card-excerpt">18 服中 12 服天幣變便宜、5 服變貴。天神宙斯漲 28.1%、水蛇許德拉跌 30.4%。每 5 日更新一次。</p>
             </div>
         </a>
-        <!-- 2026/04/23 -->
-        <a href="./騎士新手裝備-1到50級採購清單/" class="news-card">
-            <div class="news-card-image" style="background-image: url('../images/news/knight.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
-            <div class="news-card-body">
-                <div class="news-card-meta">
-                    <span class="news-category">裝備攻略</span>
-                    <span>2026/04/23</span>
-                </div>
-                <h2 class="news-card-title">騎士新手裝備推薦：1-50 級每階段優先採購清單</h2>
-                <p class="news-card-excerpt">騎士新手常浪費天幣在不適合的裝備上。本文整理 1-50 級各階段優先採購清單與三個通用採購原則，幫你把每一顆天幣花在刀口上。</p>
-            </div>
-        </a>
         <!-- 2026/04/22 -->
-        <a href="./天幣代購詐騙-7個檢查要點/" class="news-card">
+        <a href="./天幣代購詐騙-7個檢查要點/" class="news-card" data-category="防詐騙">
             <div class="news-card-image" style="background-image: url('../images/news/fraud.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
             <div class="news-card-body">
                 <div class="news-card-meta">
@@ -258,18 +246,6 @@
                 </div>
                 <h2 class="news-card-title">天幣代購詐騙：7 個交易前必查的安全要點</h2>
                 <p class="news-card-excerpt">天堂經典版天幣交易行之有年，但詐騙手法也層出不窮。本文整理 7 個交易前必須檢查的要點，從確認官方 LINE 到保留交易紀錄，幫你避開常見陷阱。</p>
-            </div>
-        </a>
-        <!-- 2026/04/21 -->
-        <a href="./太陽神阿波羅伺服器完整解析/" class="news-card">
-            <div class="news-card-image" style="background-image: url('../images/news/apollo.jpg'), linear-gradient(135deg, rgba(200,150,62,0.12), rgba(56,189,248,0.08));"></div>
-            <div class="news-card-body">
-                <div class="news-card-meta">
-                    <span class="news-category">伺服器介紹</span>
-                    <span>2026/04/21</span>
-                </div>
-                <h2 class="news-card-title">太陽神阿波羅伺服器完整解析：人口、經濟與幣價</h2>
-                <p class="news-card-excerpt">太陽神阿波羅作為天堂經典版元老伺服器，人口活躍度高、幣價穩定。本文從人口、經濟、職業分布與交易環境四面向完整解析。</p>
             </div>
         </a>
     </div>
@@ -315,6 +291,22 @@ document.getElementById('mobileClose').addEventListener('click', closeMobile);
 function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
 function showComingSoon(e) { e.preventDefault(); document.getElementById('comingSoonModal').classList.add('show'); }
 document.getElementById('comingSoonModal').addEventListener('click', function(e) { if(e.target===this) this.classList.remove('show'); });
+// Category filter
+document.querySelectorAll('.category-chip').forEach(function(chip) {
+    chip.addEventListener('click', function(e) {
+        e.preventDefault();
+        var filter = this.getAttribute('data-filter');
+        document.querySelectorAll('.category-chip').forEach(function(c) { c.classList.remove('active'); });
+        this.classList.add('active');
+        document.querySelectorAll('.news-card').forEach(function(card) {
+            if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
 </script>
 <!-- Structured Data: CollectionPage + ItemList -->
 <script type="application/ld+json">
@@ -330,9 +322,7 @@ document.getElementById('comingSoonModal').addEventListener('click', function(e)
             { "@type": "ListItem", "position": 1, "url": "https://sunwater.me/news/第一次跟日央水原交易-完整流程/", "name": "第一次跟日央水原交易？5 分鐘看完完整流程" },
             { "@type": "ListItem", "position": 2, "url": "https://sunwater.me/news/天幣交易-代付代匯-2大付款陷阱/", "name": "天幣交易 2 大付款陷阱：代付與代匯" },
             { "@type": "ListItem", "position": 3, "url": "https://sunwater.me/news/5日K線速報-20260424/", "name": "【5 日 K 線速報】2026/04/19~04/24：新服效應蔓延，12 服天幣變便宜" },
-            { "@type": "ListItem", "position": 4, "url": "https://sunwater.me/news/騎士新手裝備-1到50級採購清單/", "name": "騎士新手裝備推薦：1-50 級每階段優先採購清單" },
-            { "@type": "ListItem", "position": 5, "url": "https://sunwater.me/news/天幣代購詐騙-7個檢查要點/", "name": "天幣代購詐騙:7 個交易前必查的安全要點" },
-            { "@type": "ListItem", "position": 6, "url": "https://sunwater.me/news/太陽神阿波羅伺服器完整解析/", "name": "太陽神阿波羅伺服器完整解析:人口、經濟與幣價" }
+            { "@type": "ListItem", "position": 4, "url": "https://sunwater.me/news/天幣代購詐騙-7個檢查要點/", "name": "天幣代購詐騙:7 個交易前必查的安全要點" }
         ]
     }
 }
