@@ -434,4 +434,12 @@ function switchPage(page) {
 }
 // ===== Init: read URL param =====
 (function() {
-    var params = new URLSearchParams(window.l
+    var params = new URLSearchParams(window.location.search);
+    var page = params.get('page');
+    if (page && ['terms', 'risk', 'privacy', 'aml'].indexOf(page) !== -1) {
+        switchPage(page);
+    }
+})();
+</script>
+</body>
+</html>
